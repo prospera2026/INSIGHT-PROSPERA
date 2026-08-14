@@ -15,7 +15,7 @@ export async function fetchTransactions(): Promise<Transaction[]> {
 
     if (!error && files && files.length > 0) {
       // Ambil file CSV terbaru
-      const latestFile = files.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0];
+      const latestFile = files.sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime())[0];
       const { data: blob, error: downloadError } = await supabase.storage.from(BUCKET_NAME).download(latestFile.name);
 
       if (!downloadError && blob) {
