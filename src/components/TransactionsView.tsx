@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Transaction, autoCategorize, parseNumber } from "@/lib/transactions";
-import { saveTransactions, clearTransactions } from "@/lib/db";
+import { uploadCSVToStorage, clearTransactions } from "@/lib/db";
 import { UploadCloud, Search, Filter, CheckCircle2, FileUp, Trash2, Database, Eye, X } from "lucide-react";
 import Papa from "papaparse";
 
@@ -53,10 +53,10 @@ export const TransactionsView: React.FC<TransactionsViewProps> = ({
         });
 
         if (parsed.length > 0) {
-          // Simpan ke Supabase Database & LocalStorage
-          saveTransactions(parsed).then((savedData) => {
+          // Upload berkas CSV ke Supabase Storage Bucket (Hemat Quota DB)
+          uploadCSVToStorage(file, parsed).then((savedData) => {
             setTransactions(savedData);
-            setUploadSuccessMessage(`Berhasil menyimpan ${parsed.length} baris data ke Database Supabase Cloud & LocalStorage!`);
+            setUploadSuccessMessage(`Berhasil mengunggah file "${file.name}" ke Supabase Storage Cloud (${parsed.length} baris parsed)!`);
             setTimeout(() => setUploadSuccessMessage(null), 5000);
           });
         }

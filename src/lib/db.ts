@@ -1,40 +1,52 @@
 "use client";
 
-import { Transaction } from "./transactions";
+import { Transaction, autoCategorize, parseNumber } from "./transactions";
 import { supabase } from "./supabaseClient";
+import Papa from "papaparse";
 
 const DB_KEY = "PROSPERA_LOCAL_TRANSACTIONS_V1";
+const BUCKET_NAME = "csv-files";
 
-// Ambil transaksi: Utamakan Supabase, jika offline/gagal gunakan LocalStorage fallback
+// 1. Ambil Transaksi dari File CSV di Supabase Storage (atau LocalStorage jika offline)
 export async function fetchTransactions(): Promise<Transaction[]> {
   try {
-    const { data, error } = await supabase
-      .from("transactions")
-      .select("*")
-      .order("created_at", { ascending: false });
+    // Cek daftar file di bucket Supabase Storage
+    const { data: files, error } = await supabase.storage.from(BUCKET_NAME).list();
 
-    if (!error && data && data.length > 0) {
-      // Map Supabase snake_case columns to Transaction model
-      const mapped: Transaction[] = data.map((t: any) => ({
-        id: t.id,
-        postDate: t.post_date,
-        valueDate: t.value_date || "-",
-        branch: t.branch || "0989",
-        journalNo: t.journal_no,
-        description: t.description,
-        debit: Number(t.debit) || 0,
-        credit: Number(t.credit) || 0,
-        category: t.category || "Lain-lain / Operational",
-      }));
-      // Sync local cache
-      localStorage.setItem(DB_KEY, JSON.stringify(mapped));
-      return mapped;
+    if (!error && files && files.length > 0) {
+      // Ambil file CSV terbaru
+      const latestFile = files.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0];
+      const { data: blob, error: downloadError } = await supabase.storage.from(BUCKET_NAME).download(latestFile.name);
+
+      if (!downloadError && blob) {
+        const text = await blob.text();
+        const parsedResults = Papa.parse(text, { header: true, skipEmptyLines: true });
+        
+        const mapped: Transaction[] = parsedResults.data.map((row: any, idx: number) => {
+          const debit = parseNumber(row["Debit"] || row["debit"]);
+          const credit = parseNumber(row["Credit"] || row["credit"]);
+          const desc = row["Description"] || row["description"] || "Transaksi CSV";
+          return {
+            id: `tx-storage-${idx}`,
+            postDate: row["Post Date"] || row["post_date"] || "-",
+            valueDate: row["Value Date"] || row["value_date"] || "-",
+            branch: row["Branch"] || row["branch"] || "0989",
+            journalNo: row["Journal No."] || row["journal_no"] || `J-${idx + 1000}`,
+            description: desc,
+            debit,
+            credit,
+            category: autoCategorize(desc),
+          };
+        });
+
+        localStorage.setItem(DB_KEY, JSON.stringify(mapped));
+        return mapped;
+      }
     }
   } catch (err) {
-    console.warn("Supabase fetch fallback to LocalStorage:", err);
+    console.warn("Supabase Storage fetch fallback to LocalStorage:", err);
   }
 
-  // LocalStorage Fallback
   return getLocalTransactions();
 }
 
@@ -49,43 +61,40 @@ export function getLocalTransactions(): Transaction[] {
   }
 }
 
-// Simpan data transaksi baru ke Supabase & LocalStorage Database
-export async function saveTransactions(newTransactions: Transaction[]): Promise<Transaction[]> {
-  // 1. Simpan ke LocalStorage instan
-  localStorage.setItem(DB_KEY, JSON.stringify(newTransactions));
+// 2. Upload File CSV ke Supabase Storage Bucket (Hemat Quota DB)
+export async function uploadCSVToStorage(file: File, parsedTransactions: Transaction[]): Promise<Transaction[]> {
+  // Simpan instan di LocalStorage
+  localStorage.setItem(DB_KEY, JSON.stringify(parsedTransactions));
 
-  // 2. Sync / Insert Batch ke Supabase
   try {
-    const rowsToInsert = newTransactions.map((t) => ({
-      post_date: t.postDate,
-      value_date: t.valueDate,
-      branch: t.branch,
-      journal_no: t.journalNo,
-      description: t.description,
-      debit: t.debit,
-      credit: t.credit,
-      category: t.category,
-    }));
+    const fileName = `transactions_${Date.now()}_${file.name.replace(/\s+/g, "_")}`;
+    const { error } = await supabase.storage.from(BUCKET_NAME).upload(fileName, file, {
+      cacheControl: "3600",
+      upsert: true,
+    });
 
-    const { error } = await supabase.from("transactions").insert(rowsToInsert);
     if (error) {
-      console.warn("Peringatan insert Supabase:", error.message);
+      console.warn("Peringatan Upload Supabase Storage:", error.message);
     }
   } catch (err) {
-    console.error("Gagal sync ke Supabase:", err);
+    console.error("Gagal upload ke Supabase Storage:", err);
   }
 
-  return newTransactions;
+  return parsedTransactions;
 }
 
-// Hapus seluruh data transaksi lokal & Supabase
+// 3. Clear Storage & Local Database
 export async function clearTransactions(): Promise<void> {
   if (typeof window !== "undefined") {
     localStorage.removeItem(DB_KEY);
   }
   try {
-    await supabase.from("transactions").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+    const { data: files } = await supabase.storage.from(BUCKET_NAME).list();
+    if (files && files.length > 0) {
+      const fileNames = files.map((f) => f.name);
+      await supabase.storage.from(BUCKET_NAME).remove(fileNames);
+    }
   } catch (err) {
-    console.error("Gagal hapus data Supabase:", err);
+    console.error("Gagal hapus file di Supabase Storage:", err);
   }
 }
