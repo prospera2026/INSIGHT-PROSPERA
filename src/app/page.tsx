@@ -13,7 +13,7 @@ export default function Home() {
   const [isMounted, setIsMounted] = useState<boolean>(false);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [userRole, setUserRole] = useState<"admin" | "user">("user");
-  const [activeTab, setActiveTab] = useState<"dashboard" | "transactions" | "categories">("transactions");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "transactions" | "categories">("dashboard");
   const [darkMode, setDarkMode] = useState<boolean>(false);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [customCategories, setCustomCategories] = useState<string[]>([]);

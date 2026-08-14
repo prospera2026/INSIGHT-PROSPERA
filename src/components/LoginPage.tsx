@@ -18,12 +18,12 @@ export const LoginPage: React.FC<LoginProps> = ({ onLoginSuccess }) => {
   const handleKeyLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
-    if (accessKey.trim().length !== 6) {
-      setErrorMessage("Access Key harus berisi 6 digit angka/huruf!");
-      return;
+    const key = accessKey.trim().toUpperCase();
+    if (key === "AGUNG69") {
+      onLoginSuccess("user", key);
+    } else {
+      setErrorMessage("Access Key Salah! Gunakan kode akses resmi: AGUNG69");
     }
-    // Success key login
-    onLoginSuccess("user", accessKey.toUpperCase());
   };
 
   const handleAdminLogin = (e: React.FormEvent) => {
@@ -162,8 +162,8 @@ export const LoginPage: React.FC<LoginProps> = ({ onLoginSuccess }) => {
                     <KeyRound className="w-4 h-4 absolute left-3 text-slate-400" />
                     <input
                       type="text"
-                      maxLength={6}
-                      placeholder="X89AB2"
+                      maxLength={7}
+                      placeholder="AGUNG69"
                       value={accessKey}
                       onChange={(e) => setAccessKey(e.target.value.toUpperCase())}
                       className="insight-input pl-9 w-full text-center tracking-[0.25em] font-mono text-base font-black uppercase text-[var(--google-blue)]"
