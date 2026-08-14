@@ -569,30 +569,16 @@
     const anonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ4emFncWF4bWNhaHJjb3J2eGNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2NzE1MjcsImV4cCI6MjEwMjI0NzUyN30.k6xVxclf1NypkY_5rb2nvL5md5Etp85uGpJpGvwCgBw";
 
     try {
-      // 1. Ambil daftar file CSV di Supabase Storage Bucket
-      const res = await fetch(`${supabaseUrl}/storage/v1/object/list/csv-files`, {
-        method: 'POST',
+      // Direct Download file CSV publik dari Cloud Storage Supabase
+      const csvUrl = `${supabaseUrl}/storage/v1/object/public/csv-files/Transaction_Inquiry_Download_Single_20260814090236597.csv`;
+      const csvRes = await fetch(csvUrl, {
         headers: {
           'apikey': anonKey,
-          'Authorization': 'Bearer ' + anonKey,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ prefix: '', limit: 100 })
+          'Authorization': 'Bearer ' + anonKey
+        }
       });
 
-      const files = await res.json();
-      if (Array.isArray(files) && files.length > 0) {
-        // Ambil file CSV terbaru
-        const latestFile = files.sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime())[0];
-        
-        // Unduh berkas CSV dari Cloud
-        const csvRes = await fetch(`${supabaseUrl}/storage/v1/object/csv-files/${latestFile.name}`, {
-          headers: {
-            'apikey': anonKey,
-            'Authorization': 'Bearer ' + anonKey
-          }
-        });
-
+      if (csvRes.ok) {
         const csvText = await csvRes.text();
         Papa.parse(csvText, {
           header: true, skipEmptyLines: true,
