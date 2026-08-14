@@ -674,12 +674,47 @@
     if (tab === 'categories') renderCategories();
   }
 
-  // 🟢 AUTO FETCH LATEST UPLOADED CSV FROM SUPABASE CLOUD STORAGE
+  // 🟢 AUTO FETCH FROM SUPABASE CLOUD DATABASE & STORAGE
   async function fetchSupabaseCloudData() {
     const supabaseUrl = "https://bxzagqaxmcahrcorvxco.supabase.co";
     const anonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ4emFncWF4bWNhaHJjb3J2eGNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2NzE1MjcsImV4cCI6MjEwMjI0NzUyN30.k6xVxclf1NypkY_5rb2nvL5md5Etp85uGpJpGvwCgBw";
 
-    // Utamakan LocalStorage jika user baru saja mengunggah file lokal
+    try {
+      // 1. Ambil data langsung dari Tabel PostgreSQL Supabase Cloud
+      const dbRes = await fetch(`${supabaseUrl}/rest/v1/transactions?select=*&order=created_at.desc`, {
+        headers: {
+          'apikey': anonKey,
+          'Authorization': 'Bearer ' + anonKey
+        }
+      });
+
+      if (dbRes.ok) {
+        const dbData = await dbRes.json();
+        if (Array.isArray(dbData) && dbData.length > 0) {
+          const mapped: Transaction[] = dbData.map((t, idx) => ({
+            id: t.id || idx,
+            postDate: t.post_date || '-',
+            formattedDate: parseAndFormatDate(t.post_date),
+            journalNo: t.journal_no || `J-${idx + 1000}`,
+            description: t.description || 'Transaksi Supabase DB',
+            debit: parseFloat(t.debit) || 0,
+            credit: parseFloat(t.credit) || 0,
+            category: t.category || categorizeTransaction(t.description)
+          }));
+
+          transactions = mapped;
+          localStorage.setItem('PROSPERA_HTML_TX', JSON.stringify(transactions));
+          const currentTab = localStorage.getItem('prospera_active_tab') || 'dashboard';
+          if (currentTab === 'dashboard') renderDashboard();
+          if (currentTab === 'transactions') renderTxTable();
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn("Supabase DB fetch note:", err);
+    }
+
+    // Fallback: Jika DB kosong, baca dari LocalStorage
     const localData = localStorage.getItem('PROSPERA_HTML_TX');
     if (localData) {
       try {
@@ -691,70 +726,6 @@
           if (currentTab === 'transactions') renderTxTable();
         }
       } catch(e) {}
-    }
-
-    try {
-      // Direct Query daftar file CSV di Supabase Storage Bucket
-      const listRes = await fetch(`${supabaseUrl}/storage/v1/object/list/csv-files`, {
-        method: 'POST',
-        headers: {
-          'apikey': anonKey,
-          'Authorization': 'Bearer ' + anonKey,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ prefix: '', limit: 100 })
-      });
-
-      if (listRes.ok) {
-        const files = await listRes.json();
-        if (Array.isArray(files) && files.length > 0) {
-          // Sort untuk mengambil file CSV yang TERBARU di-upload
-          const latestFile = files.sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime())[0];
-          
-          const csvUrl = `${supabaseUrl}/storage/v1/object/public/csv-files/${latestFile.name}`;
-          const csvRes = await fetch(csvUrl);
-
-          if (csvRes.ok) {
-            const csvText = await csvRes.text();
-            Papa.parse(csvText, {
-              header: true, skipEmptyLines: true,
-              complete: function(results) {
-                let validRows = [];
-                results.data.forEach((row, idx) => {
-                  const debit = parseCurrency(row['Debit'] || row['debit']);
-                  const credit = parseCurrency(row['Credit'] || row['credit']);
-                  const desc = row['Description'] || row['description'];
-                  const journalNo = row['Journal No.'] || row['journal_no'];
-
-                  if (!desc && !journalNo && debit === 0 && credit === 0) return;
-
-                  const rawDate = row['Post Date'] || row['post_date'] || '-';
-                  validRows.push({
-                    id: idx,
-                    postDate: rawDate,
-                    formattedDate: parseAndFormatDate(rawDate),
-                    journalNo: journalNo || `J-${idx + 1000}`,
-                    description: desc || 'Transaksi CSV',
-                    debit,
-                    credit,
-                    category: categorizeTransaction(desc)
-                  });
-                });
-
-                if (validRows.length > 0) {
-                  transactions = validRows;
-                  localStorage.setItem('PROSPERA_HTML_TX', JSON.stringify(transactions));
-                  const currentTab = localStorage.getItem('prospera_active_tab') || 'dashboard';
-                  if (currentTab === 'dashboard') renderDashboard();
-                  if (currentTab === 'transactions') renderTxTable();
-                }
-              }
-            });
-          }
-        }
-      }
-    } catch (err) {
-      console.warn("Cloud Sync Note:", err);
     }
   }
 
@@ -814,6 +785,7 @@
         const supabaseUrl = "https://bxzagqaxmcahrcorvxco.supabase.co";
         const anonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ4emFncWF4bWNhaHJjb3J2eGNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2NzE1MjcsImV4cCI6MjEwMjI0NzUyN30.k6xVxclf1NypkY_5rb2nvL5md5Etp85uGpJpGvwCgBw";
 
+        // 1. Upload File CSV ke Storage Bucket
         const fileName = `transactions_${Date.now()}_${file.name.replace(/\s+/g, "_")}`;
         fetch(`${supabaseUrl}/storage/v1/object/csv-files/${fileName}`, {
           method: 'POST',
@@ -824,11 +796,32 @@
             'x-upsert': 'true'
           },
           body: file
-        }).then(r => r.json()).then(res => {
-          console.log("Uploaded to Supabase Storage:", res);
-        }).catch(err => console.warn("Supabase Storage upload warning:", err));
+        }).catch(err => console.warn("Storage upload note:", err));
 
-        alert(`Berhasil memvalidasi ${transactions.length} baris! File ter-upload ke Supabase Storage & tersimpan di LocalStorage.`);
+        // 2. 🟢 DIRECT SYNC KE SUPABASE DATABASE TABLE (POSTGRESQL)
+        const dbPayload = validRows.map(t => ({
+          post_date: t.postDate,
+          journal_no: t.journalNo,
+          description: t.description,
+          debit: t.debit,
+          credit: t.credit,
+          category: t.category
+        }));
+
+        fetch(`${supabaseUrl}/rest/v1/transactions`, {
+          method: 'POST',
+          headers: {
+            'apikey': anonKey,
+            'Authorization': 'Bearer ' + anonKey,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify(dbPayload)
+        }).then(res => {
+          console.log("Direct Supabase DB Insert Result:", res.status);
+          alert(`Berhasil mengunggah & menyimpan ${transactions.length} transaksi langsung ke Database Supabase Cloud!`);
+        }).catch(err => console.error("Database sync error:", err));
+
         renderDashboard(); renderTxTable();
       }
     });
