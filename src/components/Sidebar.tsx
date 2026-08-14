@@ -56,19 +56,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
           )}
         </div>
 
-        {/* Navigation Menu (Next.js Link Routing) */}
-        <nav className="space-y-2">
+        {/* Navigation Menu (Compact Next.js Link Routing) */}
+        <nav className="space-y-1.5">
           {/* Menu 1: Dashboard Utama */}
           <Link
             href="/dashboard"
             onClick={onCloseMobile}
-            className={`w-full flex items-center gap-2.5 px-3 py-2 font-black text-[11px] uppercase tracking-wider border-2 border-[var(--insight-border)] transition-all ${
+            className={`w-full flex items-center gap-2 px-2.5 py-1.5 font-black text-[10px] uppercase tracking-wider border-2 border-[var(--insight-border)] transition-all font-sans ${
               isDashboardActive
-                ? "bg-[var(--google-blue)] text-white shadow-[3px_3px_0_#0f172a] -translate-y-0.5"
-                : "bg-[var(--insight-panel)] text-[var(--insight-text)] hover:bg-slate-100 dark:hover:bg-slate-800 shadow-[2px_2px_0_var(--insight-shadow)]"
+                ? "bg-[var(--google-blue)] text-white shadow-[2px_2px_0_#0f172a] -translate-y-0.5"
+                : "bg-[var(--insight-panel)] text-[var(--insight-text)] hover:bg-slate-100 dark:hover:bg-slate-800 shadow-[1.5px_1.5px_0_var(--insight-shadow)]"
             }`}
           >
-            <LayoutDashboard className="w-3.5 h-3.5" />
+            <LayoutDashboard className="w-3 h-3" />
             <span>Dashboard Utama</span>
           </Link>
 
@@ -76,13 +76,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <Link
             href="/dashboard/transactions"
             onClick={onCloseMobile}
-            className={`w-full flex items-center gap-2.5 px-3 py-2 font-black text-[11px] uppercase tracking-wider border-2 border-[var(--insight-border)] transition-all ${
+            className={`w-full flex items-center gap-2 px-2.5 py-1.5 font-black text-[10px] uppercase tracking-wider border-2 border-[var(--insight-border)] transition-all font-sans ${
               isTransactionsActive
-                ? "bg-[var(--google-blue)] text-white shadow-[3px_3px_0_#0f172a] -translate-y-0.5"
-                : "bg-[var(--insight-panel)] text-[var(--insight-text)] hover:bg-slate-100 dark:hover:bg-slate-800 shadow-[2px_2px_0_var(--insight-shadow)]"
+                ? "bg-[var(--google-blue)] text-white shadow-[2px_2px_0_#0f172a] -translate-y-0.5"
+                : "bg-[var(--insight-panel)] text-[var(--insight-text)] hover:bg-slate-100 dark:hover:bg-slate-800 shadow-[1.5px_1.5px_0_var(--insight-shadow)]"
             }`}
           >
-            <FileSpreadsheet className="w-3.5 h-3.5" />
+            <FileSpreadsheet className="w-3 h-3" />
             <span>UPLOAD TRANSC</span>
           </Link>
 
@@ -90,13 +90,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <Link
             href="/dashboard/categories"
             onClick={onCloseMobile}
-            className={`w-full flex items-center gap-2.5 px-3 py-2 font-black text-[11px] uppercase tracking-wider border-2 border-[var(--insight-border)] transition-all ${
+            className={`w-full flex items-center gap-2 px-2.5 py-1.5 font-black text-[10px] uppercase tracking-wider border-2 border-[var(--insight-border)] transition-all font-sans ${
               isCategoriesActive
-                ? "bg-[var(--google-blue)] text-white shadow-[3px_3px_0_#0f172a] -translate-y-0.5"
-                : "bg-[var(--insight-panel)] text-[var(--insight-text)] hover:bg-slate-100 dark:hover:bg-slate-800 shadow-[2px_2px_0_var(--insight-shadow)]"
+                ? "bg-[var(--google-blue)] text-white shadow-[2px_2px_0_#0f172a] -translate-y-0.5"
+                : "bg-[var(--insight-panel)] text-[var(--insight-text)] hover:bg-slate-100 dark:hover:bg-slate-800 shadow-[1.5px_1.5px_0_var(--insight-shadow)]"
             }`}
           >
-            <Tag className="w-3.5 h-3.5" />
+            <Tag className="w-3 h-3" />
             <span>Kategori Transaksi</span>
           </Link>
         </nav>
