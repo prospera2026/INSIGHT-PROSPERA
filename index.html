@@ -24,6 +24,16 @@
     --brand-yellow: #FBBC05;
   }
 
+  html.dark {
+    --bg-page: #0f172a;
+    --panel-white: #1e293b;
+    --ink-900: #f8fafc;
+    --ink-600: #cbd5e1;
+    --border: #94a3b8;
+    --insight-shadow: #000000;
+    --insight-grid: #1e293b;
+  }
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     margin: 0; font-family: 'Geist Mono', monospace; font-size: 13px;
@@ -55,39 +65,40 @@
   .app-stage { display: none; min-height: 100vh; flex-direction: column; }
   @media(min-width: 768px) { .app-stage { flex-direction: row; } }
 
-  /* MOBILE TOP NAV BAR */
-  .mobile-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 12px 16px; background: var(--panel-white); border-bottom: 3px solid var(--border);
-  }
-  @media(min-width: 768px) { .mobile-header { display: none; } }
-
-  /* SIDEBAR MOBILE OVERLAY & DESKTOP FIXED */
+  /* SIDEBAR EXACT MATCH ORIGINAL REACT COMPONENT */
   .sidebar {
-    width: 100%; background: var(--panel-white); border-bottom: 3px solid var(--border);
-    padding: 12px 16px; display: flex; flex-direction: column; justify-content: space-between;
+    width: 100%; background: var(--panel-white); border-bottom: 4px solid var(--border);
+    padding: 14px; display: flex; flex-direction: column; justify-content: space-between;
   }
   @media(min-width: 768px) {
-    .sidebar { width: 230px; border-right: 4px solid var(--border); border-bottom: none; min-height: 100vh; padding: 16px; }
+    .sidebar { width: 230px; border-right: 4px solid var(--border); border-bottom: none; min-height: 100vh; padding: 14px; }
   }
 
   .main-content { flex: 1; padding: 16px; overflow-y: auto; }
   @media(min-width: 768px) { .main-content { padding: 28px; max-height: 100vh; } }
 
-  /* NEOBRUTALIST COMPONENTS COMPACT FOR MOBILE */
+  /* NEOBRUTALIST COMPONENTS EXACT ORIGINAL STYLE */
   .insight-card {
-    background: var(--panel-white); border: 2.5px solid var(--border);
-    box-shadow: 3.5px 3.5px 0 var(--insight-shadow); padding: 14px; margin-bottom: 16px;
+    background: var(--panel-white); border: 3px solid var(--border);
+    box-shadow: 4px 4px 0 var(--insight-shadow); padding: 16px; margin-bottom: 16px;
   }
   .insight-button {
-    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-    padding: 8px 12px; font-family: inherit; font-size: 11px; font-weight: 800;
+    display: flex; align-items: center; gap: 8px; width: 100%;
+    padding: 8px 12px; font-family: inherit; font-size: 11px; font-weight: 900;
     color: var(--ink-900); background: var(--panel-white); border: 2px solid var(--border);
-    box-shadow: 2.5px 2.5px 0 var(--insight-shadow); cursor: pointer; text-transform: uppercase;
+    box-shadow: 2px 2px 0 var(--insight-shadow); cursor: pointer; text-transform: uppercase;
+    transition: all 0.15s ease;
   }
-  .insight-button--primary { background: var(--brand-blue); color: #fff; border-color: #000; box-shadow: 2.5px 2.5px 0 #000; }
-  .insight-button--danger { background: var(--brand-red); color: #fff; border-color: #000; box-shadow: 2.5px 2.5px 0 #000; }
-  .insight-button--success { background: var(--brand-green); color: #fff; border-color: #000; box-shadow: 2.5px 2.5px 0 #000; }
+  .insight-button:hover { background: #f1f5f9; }
+  .insight-button--primary {
+    background: var(--brand-blue) !important; color: #fff !important;
+    border-color: #0f172a !important; box-shadow: 3px 3px 0 #0f172a !important;
+    transform: translateY(-2px);
+  }
+  .insight-button--danger {
+    background: #fee2e2; color: #dc2626; border-color: #ef4444;
+    font-weight: 900; box-shadow: 2px 2px 0 #ef4444;
+  }
 
   .insight-input {
     background: var(--panel-white); border: 2px solid var(--border); color: var(--ink-900);
@@ -101,7 +112,6 @@
   }
   .badge-blue { background: var(--brand-blue); color: #fff; }
   .badge-green { background: var(--brand-green); color: #fff; }
-  .badge-red { background: var(--brand-red); color: #fff; }
 
   /* RESPONSIVE TABLE WRAPPER */
   .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
@@ -116,7 +126,7 @@
 
 <div class="google-top-bar"></div>
 
-<!-- 1. AUTHENTICATION STAGE (RESPONSIVE MOBILE) -->
+<!-- 1. AUTHENTICATION STAGE -->
 <div id="authStage" class="auth-stage">
   <div class="login-shell">
     <div class="panel-showcase">
@@ -133,7 +143,7 @@
     </div>
 
     <div class="panel-form">
-      <div style="font-size:9px;font-weight:800;color:var(--brand-blue);text-transform:uppercase;">MOBILE AUTH PORTAL</div>
+      <div style="font-size:9px;font-weight:800;color:var(--brand-blue);text-transform:uppercase;">AUTHENTICATION PORTAL</div>
       <h1 style="font-size:16px;font-weight:900;margin-bottom:14px;">INSIGHT PROSPERA LOGIN</h1>
 
       <div id="loginAlert" style="display:none;padding:8px;background:#fee2e2;border:2px solid #ef4444;color:#b91c1c;font-size:10.5px;font-weight:700;margin-bottom:12px;"></div>
@@ -149,7 +159,7 @@
           <label style="display:block;font-size:9.5px;font-weight:800;margin-bottom:4px;">ACCESS KEY MEMBER</label>
           <input id="inputKey" type="text" placeholder="AGUNG69" maxlength="7" class="insight-input" style="text-align:center;font-weight:900;font-size:14px;letter-spacing:2px;color:var(--brand-blue);" value="AGUNG69">
         </div>
-        <button type="submit" class="insight-button insight-button--primary" style="width:100%;padding:10px;">MASUK KE DASHBOARD →</button>
+        <button type="submit" class="insight-button insight-button--primary" style="width:100%;padding:10px;justify-content:center;">MASUK KE DASHBOARD →</button>
       </form>
 
       <!-- FORM ADMIN -->
@@ -162,46 +172,94 @@
           <label style="display:block;font-size:9.5px;font-weight:800;margin-bottom:4px;">PASSWORD ADMIN</label>
           <input id="inputAdminPass" type="password" placeholder="prospera123" class="insight-input" value="prospera123">
         </div>
-        <button type="submit" class="insight-button insight-button--primary" style="width:100%;padding:10px;">LOGIN ADMIN PANEL →</button>
+        <button type="submit" class="insight-button insight-button--primary" style="width:100%;padding:10px;justify-content:center;">LOGIN ADMIN PANEL →</button>
       </form>
     </div>
   </div>
 </div>
 
-<!-- 2. MAIN APP STAGE MOBILE OPTIMIZED -->
+<!-- 2. MAIN APP STAGE -->
 <div id="appStage" class="app-stage">
-  <!-- SIDEBAR / NAVIGATION MENU -->
+  <!-- SIDEBAR (RESTORED TO ORIGINAL COMPONENT DESIGN) -->
   <aside class="sidebar">
-    <div style="display:flex;flex-wrap:wrap;align-items:center;justify-between;gap:8px;">
-      <div style="display:flex;align-items:center;gap:8px;">
-        <div style="width:26px;height:26px;background:var(--brand-blue);border:2px solid #000;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;box-shadow:1.5px 1.5px 0 #000;">P</div>
-        <span style="font-weight:900;font-size:15px;">PROSPERA</span>
+    <div>
+      <!-- Brand Header -->
+      <div style="margin-bottom:20px;padding-bottom:12px;border-bottom:3px solid var(--border);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px;">
+          <div style="width:28px;height:28px;background:var(--brand-blue);border:2px solid #000;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;box-shadow:1.5px 1.5px 0 #000;">
+            P
+          </div>
+          <span style="font-weight:900;font-size:18px;letter-spacing:1px;">
+            PROSPERA
+          </span>
+        </div>
+        <p style="font-size:9px;font-weight:800;letter-spacing:1px;color:var(--brand-blue);text-transform:uppercase;">
+          SAISOKU Financial Hub v1.0
+        </p>
       </div>
 
-      <!-- MOBILE QUICK LOGOUT -->
-      <button onclick="handleLogout()" class="insight-button insight-button--danger" style="padding:4px 8px;font-size:9.5px;">LOGOUT</button>
+      <!-- Navigation Menu (EXACT ORIGINAL SIDEBAR BUTTONS) -->
+      <nav style="display:flex;flex-direction:column;gap:8px;">
+        <button onclick="switchAppTab('dashboard')" id="navDashboard" class="insight-button insight-button--primary">
+          <svg class="w-4 h-4" style="width:14px;height:14px;" fill="none;stroke:currentColor" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span>Dashboard Utama</span>
+        </button>
+        <button onclick="switchAppTab('transactions')" id="navTransactions" class="insight-button">
+          <svg class="w-4 h-4" style="width:14px;height:14px;" fill="none;stroke:currentColor" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <span>UPLOAD TRANSC</span>
+        </button>
+        <button onclick="switchAppTab('categories')" id="navCategories" class="insight-button">
+          <svg class="w-4 h-4" style="width:14px;height:14px;" fill="none;stroke:currentColor" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+          <span>Kategori Transaksi</span>
+        </button>
+      </nav>
     </div>
 
-    <!-- NAV MENU BUTTONS GRID FOR MOBILE -->
-    <nav style="display:grid;grid-template-columns:repeat(3, 1fr);gap:6px;margin-top:10px;">
-      <button onclick="switchAppTab('dashboard')" id="navDashboard" class="insight-button insight-button--primary" style="font-size:9.5px;padding:6px 4px;text-align:center;">📊 Dashboard</button>
-      <button onclick="switchAppTab('transactions')" id="navTransactions" class="insight-button" style="font-size:9.5px;padding:6px 4px;text-align:center;">📁 Upload</button>
-      <button onclick="switchAppTab('categories')" id="navCategories" class="insight-button" style="font-size:9.5px;padding:6px 4px;text-align:center;">🏷️ Kategori</button>
-    </nav>
+    <!-- Sidebar Footer -->
+    <div style="margin-top:20px;display:flex;flex-direction:column;gap:12px;padding-top:14px;border-top:3px solid var(--border);">
+      <!-- Database Status -->
+      <div style="padding:10px;background:#f1f5f9;border:2px solid var(--border);box-shadow:2px 2px 0 var(--insight-shadow);">
+        <div style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:800;">
+          <span style="color:var(--brand-green);">●</span>
+          <span>STATUS DATA</span>
+        </div>
+        <p style="font-size:9.5px;color:#64748b;margin-top:4px;font-weight:700;">
+          Local Parsed CSV / Demo State
+        </p>
+      </div>
+
+      <!-- User Info & Logout -->
+      <div style="padding:8px;border:2px solid var(--border);background:var(--panel-white);display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span style="color:var(--brand-blue);font-weight:900;">🛡️</span>
+          <div>
+            <div id="sidebarUserTitle" style="font-size:11px;font-weight:900;text-transform:uppercase;">
+              Member Key Access
+            </div>
+            <div id="sidebarUserRole" style="font-size:9px;color:#64748b;font-weight:800;text-transform:uppercase;">
+              Role: user
+            </div>
+          </div>
+        </div>
+        <button onclick="handleLogout()" class="insight-button insight-button--danger" style="justify-content:center;padding:6px;font-size:10px;">
+          LOGOUT SESI
+        </button>
+      </div>
+    </div>
   </aside>
 
-  <!-- MAIN WORKSPACE MOBILE COMPACT -->
+  <!-- MAIN WORKSPACE -->
   <main class="main-content">
     <!-- VIEW 1: DASHBOARD UTAMA -->
     <div id="viewDashboard">
       <div class="insight-card" style="background:#0f172a;color:#fff;padding:12px;">
         <div style="font-size:8.5px;background:var(--brand-blue);display:inline-block;padding:2px 5px;font-weight:800;margin-bottom:3px;">RINGKASAN EKSEKUTIF</div>
         <h1 style="font-size:14px;font-weight:900;">DASHBOARD UTAMA ARUS KAS</h1>
-        <p style="font-size:9.5px;color:#94a3b8;">Pemantauan saldo real-time SAISOKU.ID di Smartphone.</p>
+        <p style="font-size:9.5px;color:#94a3b8;">Pemantauan saldo real-time SAISOKU.ID di Smartphone & Desktop.</p>
       </div>
 
-      <!-- STAT CARDS MOBILE GRID -->
-      <div style="display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:14px;">
+      <!-- STAT CARDS -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:10px;margin-bottom:14px;">
         <div class="insight-card" style="border-left:5px solid var(--brand-red);padding:10px;">
           <div style="font-size:8.5px;font-weight:800;color:#64748b;">TOTAL DEBIT (PENGELUARAN)</div>
           <div id="dashDebit" style="font-size:16px;font-weight:900;color:#ef4444;margin:2px 0;">Rp 0</div>
@@ -221,7 +279,7 @@
 
       <!-- CHART AREA -->
       <div class="insight-card">
-        <h3 style="font-size:11px;font-weight:800;margin-bottom:10px;text-transform:uppercase;">📊 GRAFIK ARUS KAS MOBILE</h3>
+        <h3 style="font-size:11px;font-weight:800;margin-bottom:10px;text-transform:uppercase;">📊 GRAFIK ARUS KAS PER TANGGAL</h3>
         <div style="height:200px;"><canvas id="cashFlowChart"></canvas></div>
       </div>
     </div>
@@ -232,11 +290,11 @@
         <div style="font-size:8.5px;background:var(--brand-green);display:inline-block;padding:2px 5px;font-weight:800;margin-bottom:3px;">STORAGE CLOUD PARSER</div>
         <h1 style="font-size:14px;font-weight:900;">DATABASE TRANSAKSI & CSV</h1>
         <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">
-          <label class="insight-button insight-button--primary" style="font-size:9.5px;padding:6px 10px;">
+          <label class="insight-button insight-button--primary" style="font-size:9.5px;padding:6px 10px;width:auto;">
             📤 UPLOAD BENCHMARK CSV
             <input type="file" accept=".csv" onchange="handleFileUpload(event)" style="display:none;">
           </label>
-          <button onclick="handleResetDB()" class="insight-button insight-button--danger" style="font-size:9.5px;padding:6px 10px;">🗑️ RESET DB</button>
+          <button onclick="handleResetDB()" class="insight-button insight-button--danger" style="font-size:9.5px;padding:6px 10px;width:auto;">🗑️ RESET DB</button>
         </div>
       </div>
 
@@ -263,14 +321,14 @@
     <!-- VIEW 3: KATEGORI TRANSAKSI -->
     <div id="viewCategories" class="tab-inactive">
       <div class="insight-card" style="background:#0f172a;color:#fff;padding:12px;">
-        <h1 style="font-size:14px;font-weight:900;">MANAJEMEN KATEGORI</h1>
+        <h1 style="font-size:14px;font-weight:900;">MANAJEMEN KATEGORI TRANSAKSI</h1>
       </div>
 
       <div class="insight-card">
         <h3 style="font-size:10.5px;font-weight:800;margin-bottom:6px;">TAMBAH KATEGORI BARU</h3>
         <div style="display:flex;gap:6px;">
           <input type="text" id="newCatInput" placeholder="Nama kategori baru..." class="insight-input">
-          <button onclick="handleAddCategory()" class="insight-button insight-button--success" style="white-space:nowrap;font-size:9.5px;">+ SIMPAN</button>
+          <button onclick="handleAddCategory()" class="insight-button insight-button--success" style="white-space:nowrap;font-size:9.5px;width:auto;">+ SIMPAN</button>
         </div>
       </div>
 
@@ -307,36 +365,27 @@
   let categories = ["Biaya Bank / BIFAST", "Purchase Order (PO)", "PaDi UMKM / Inbound", "Simpanan / Tabungan", "Titip Bayar", "Inventaris / Belanja Laptop", "Lain-lain / Operational"];
   let chartInstance = null;
 
-  // 🟢 STRICT FINANCIAL NUMBER PARSER (Indonesian & International Currency Format Support)
   function parseCurrency(val) {
     if (!val) return 0;
     if (typeof val === 'number') return isNaN(val) ? 0 : val;
-    
-    // Strip "Rp", spaces, and non-numeric chars except dot and comma
     let str = String(val).replace(/Rp|\s/gi, '').trim();
     if (!str) return 0;
 
-    // Detect format: Indonesian format (1.500.000,00) vs US format (1,500,000.00)
     const hasComma = str.includes(',');
     const hasDot = str.includes('.');
 
     if (hasDot && hasComma) {
       if (str.lastIndexOf(',') > str.lastIndexOf('.')) {
-        // Format ID: 1.500.000,00 -> Hapus titik, ganti koma dengan titik
         str = str.replace(/\./g, '').replace(',', '.');
       } else {
-        // Format US: 1,500,000.00 -> Hapus koma
         str = str.replace(/,/g, '');
       }
     } else if (hasDot && !hasComma) {
-      // Misal 1.500.000 (Ribuan Indonesia) vs 1500.00 (Desimal)
       const parts = str.split('.');
       if (parts.length > 2 || (parts.length === 2 && parts[1].length === 3)) {
-        // Pasti ribuan Indonesia: 1.500.000 -> 1500000
         str = str.replace(/\./g, '');
       }
     } else if (hasComma && !hasDot) {
-      // Misal 1,500,000 (Ribuan US) vs 1500,50 (Desimal ID)
       const parts = str.split(',');
       if (parts.length > 2 || (parts.length === 2 && parts[1].length === 3)) {
         str = str.replace(/,/g, '');
@@ -349,12 +398,9 @@
     return isNaN(result) ? 0 : result;
   }
 
-  // 🟢 STRICT DATE PARSER & FORMATTER FOR CHART GROUPING
   function parseAndFormatDate(rawDate) {
     if (!rawDate || rawDate === '-') return 'Lainnya';
     const str = String(rawDate).trim();
-
-    // Check DD/MM/YY or DD/MM/YYYY
     const matchSlash = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})/);
     if (matchSlash) {
       let day = matchSlash[1].padStart(2, '0');
@@ -362,40 +408,22 @@
       let year = matchSlash[3].length === 2 ? '20' + matchSlash[3] : matchSlash[3];
       return `${day}/${month}/${year}`;
     }
-
-    // Check YYYY-MM-DD
     const matchDash = str.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
     if (matchDash) {
       return `${matchDash[3].padStart(2, '0')}/${matchDash[2].padStart(2, '0')}/${matchDash[1]}`;
     }
-
-    // Fallback: Teks pertama sebelum spasi
     return str.split(' ')[0] || 'Lainnya';
   }
 
-  // 🟢 REGEX CATEGORY MATCHING (Mencegah False-Positive)
   function categorizeTransaction(desc) {
     if (!desc) return 'Lain-lain / Operational';
     const text = String(desc).toUpperCase();
-
-    // 1. BIFAST Fees
     if (/\b(BIFAST|BY TRX BIFAST|BIFST)\b/.test(text)) return 'Biaya Bank / BIFAST';
-
-    // 2. Purchase Order
     if (/\bPO-\d{4}/.test(text) || /\b(PURCHASE ORDER|ORDER PO)\b/.test(text)) return 'Purchase Order (PO)';
-
-    // 3. PaDi UMKM
     if (/\b(PADI|PADI UMKM|PADI 1TRX)\b/.test(text)) return 'PaDi UMKM / Inbound';
-
-    // 4. Tabungan / Simpanan
     if (/\b(NABUNG|SIMPANAN|TABUNGAN|TABUNG)\b/.test(text)) return 'Simpanan / Tabungan';
-
-    // 5. Belanja Laptop / Inventaris khusus
     if (/\b(LAPTOP HP|BELANJA LAPTOP|INVENTARIS LAPTOP|LAPTOP TIF)\b/.test(text)) return 'Inventaris / Belanja Laptop';
-
-    // 6. Titip Bayar
     if (/\b(TITIP BAYAR|TITIPAN BAYAR)\b/.test(text)) return 'Titip Bayar';
-
     return 'Lain-lain / Operational';
   }
 
@@ -413,7 +441,7 @@
   function handleKeyLogin(e) {
     e.preventDefault();
     const key = document.getElementById('inputKey').value.trim().toUpperCase();
-    if (key === 'AGUNG69') enterApp();
+    if (key === 'AGUNG69') enterApp('user');
     else showLoginAlert('Access Key Salah! Kode akses: AGUNG69');
   }
 
@@ -421,7 +449,7 @@
     e.preventDefault();
     const user = document.getElementById('inputAdminUser').value.trim();
     const pass = document.getElementById('inputAdminPass').value.trim();
-    if (user === 'prospera@gmail.com' && pass === 'prospera123') enterApp();
+    if (user === 'prospera@gmail.com' && pass === 'prospera123') enterApp('admin');
     else showLoginAlert('Kredensial Admin Salah! (prospera@gmail.com / prospera123)');
   }
 
@@ -430,9 +458,11 @@
     el.innerText = msg; el.style.display = 'block';
   }
 
-  function enterApp() {
+  function enterApp(role = 'user') {
     document.getElementById('authStage').style.display = 'none';
     document.getElementById('appStage').style.display = 'flex';
+    document.getElementById('sidebarUserTitle').innerText = role === 'admin' ? 'SAISOKU Admin' : 'Member Key Access';
+    document.getElementById('sidebarUserRole').innerText = `Role: ${role}`;
     loadTransactions();
     switchAppTab('dashboard');
   }
@@ -448,7 +478,12 @@
     document.getElementById('viewCategories').classList.toggle('tab-inactive', tab !== 'categories');
 
     ['navDashboard', 'navTransactions', 'navCategories'].forEach(id => {
-      document.getElementById(id).className = 'insight-button' + (id.toLowerCase().includes(tab) ? ' insight-button--primary' : '');
+      const el = document.getElementById(id);
+      if (id.toLowerCase().includes(tab)) {
+        el.className = 'insight-button insight-button--primary';
+      } else {
+        el.className = 'insight-button';
+      }
     });
 
     if (tab === 'dashboard') renderDashboard();
@@ -456,7 +491,6 @@
     if (tab === 'categories') renderCategories();
   }
 
-  // 🟢 STRICT CSV FILE UPLOAD & ROW-LEVEL VALIDATION
   function handleFileUpload(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -477,7 +511,6 @@
           const debit = parseCurrency(rawDebit);
           const credit = parseCurrency(rawCredit);
 
-          // Row-level Validation Check: Harus punya deskripsi/no jurnal DAN setidaknya debit/kredit tidak keduanya nol tanpa deskripsi valid
           if (!desc && !journalNo && debit === 0 && credit === 0) {
             invalidCount++;
             errorDetails.push(`Baris ${idx + 2}: Kosong / corrupt`);
@@ -540,7 +573,6 @@
     document.getElementById('dashDebitCount').innerText = `${transactions.filter(t=>t.debit>0).length} Transaksi`;
     document.getElementById('dashCreditCount').innerText = `${transactions.filter(t=>t.credit>0).length} Transaksi`;
 
-    // Strict Date Grouping
     const dateMap = {};
     transactions.forEach(t => {
       const d = t.formattedDate || parseAndFormatDate(t.postDate);
@@ -587,7 +619,7 @@
         <td style="text-align:right;color:#dc2626;font-weight:800;">${t.debit > 0 ? formatIDR(t.debit) : '-'}</td>
         <td style="text-align:right;color:#16a34a;font-weight:800;">${t.credit > 0 ? formatIDR(t.credit) : '-'}</td>
         <td style="text-align:center;">
-          <button onclick="viewDetail(${t.id})" class="insight-button insight-button--primary" style="font-size:9px;padding:3px 6px;">VIEW</button>
+          <button onclick="viewDetail(${t.id})" class="insight-button insight-button--primary" style="font-size:9px;padding:3px 6px;width:auto;display:inline-flex;">VIEW</button>
         </td>
       </tr>
     `).join('');
