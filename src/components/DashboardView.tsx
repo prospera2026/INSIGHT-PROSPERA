@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Transaction } from "@/lib/transactions";
-import { TrendingUp, TrendingDown, Wallet, ArrowUpRight, ArrowDownRight, Activity, FileSpreadsheet } from "lucide-react";
+import { Filter, Calendar } from "lucide-react";
 
 interface DashboardViewProps {
   transactions: Transaction[];
@@ -128,43 +128,44 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {/* Header Banner & Right-Aligned Compact Filters */}
-      <div className="insight-card p-4 bg-slate-900 text-white border-3 border-black relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <div className="inline-block px-1.5 py-0.5 bg-[var(--google-blue)] text-white text-[9px] font-extrabold tracking-widest uppercase mb-1 border border-black shadow-[1.5px_1.5px_0_#000]">
+      <div className="insight-card p-3.5 bg-slate-900 text-white border-3 border-black relative overflow-hidden flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <div className="flex-1">
+          <div className="inline-block px-1.5 py-0.5 bg-[var(--google-blue)] text-white text-[8.5px] font-extrabold tracking-widest uppercase mb-1 border border-black shadow-[1.5px_1.5px_0_#000]">
             RINGKASAN EKSEKUTIF
           </div>
-          <h1 className="text-base font-black tracking-tight">DASHBOARD UTAMA ARUS KAS</h1>
-          <p className="text-[11px] text-slate-300 font-medium">
+          <h1 className="text-sm font-black tracking-tight leading-tight">DASHBOARD UTAMA ARUS KAS</h1>
+          <p className="text-[10.5px] text-slate-300 font-medium">
             Pemantauan saldo real-time SAISOKU.ID di Mobile & Desktop.
           </p>
         </div>
 
-        {/* Compact Right-Aligned Filter Controls */}
-        <div className="flex items-center gap-2 bg-slate-800 p-2 border-2 border-[var(--google-blue)] self-end md:self-auto">
-          <div className="w-28">
-            <label className="block text-[8px] font-extrabold text-slate-400 mb-0.5 uppercase">
-              PERIODE
+        {/* Proportional & Right-Aligned Compact Filters */}
+        <div className="flex items-center gap-2 bg-slate-800/90 p-2 border-2 border-[var(--google-blue)] shadow-[2px_2px_0_#000] ml-auto w-full sm:w-auto justify-end">
+          <div className="w-28 sm:w-32">
+            <label className="block text-[8px] font-black text-slate-400 mb-0.5 uppercase tracking-wider flex items-center gap-1">
+              <Filter className="w-2.5 h-2.5 text-[var(--google-blue)]" /> PERIODE
             </label>
             <select
               value={filterType}
               onChange={handleFilterTypeChange}
-              className="insight-input p-1 text-[10px] font-extrabold bg-white text-black h-7"
+              className="insight-input p-1 text-[10px] font-extrabold bg-white text-slate-900 border-2 border-black h-7 rounded-none focus:outline-none w-full"
             >
               <option value="monthly">Bulanan</option>
               <option value="quarterly">Kuartal</option>
               <option value="yearly">Tahunan</option>
             </select>
           </div>
-          <div className="w-32">
-            <label className="block text-[8px] font-extrabold text-slate-400 mb-0.5 uppercase">
-              PILIH PERIODE
+
+          <div className="w-32 sm:w-36">
+            <label className="block text-[8px] font-black text-slate-400 mb-0.5 uppercase tracking-wider flex items-center gap-1">
+              <Calendar className="w-2.5 h-2.5 text-[var(--google-blue)]" /> PILIH PERIODE
             </label>
             <select
               value={filterValue}
               onChange={(e) => setFilterValue(e.target.value)}
-              className="insight-input p-1 text-[10px] font-extrabold bg-white text-black h-7"
+              className="insight-input p-1 text-[10px] font-extrabold bg-white text-slate-900 border-2 border-black h-7 rounded-none focus:outline-none w-full"
             >
               {filterType === "monthly" &&
                 MONTH_NAMES.map((name, idx) => {
