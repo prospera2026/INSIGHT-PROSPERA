@@ -198,30 +198,30 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
       </div>
 
-      {/* METADATA 1: STAT CARDS (EQUAL HEIGHT & PROPORTIONAL) */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      {/* METADATA 1: STAT CARDS (COMPACT & PROPORTIONAL) */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
         {/* Total Debit / Pengeluaran */}
-        <div className="insight-card p-3 border-l-5 border-l-[var(--google-red)] flex flex-col justify-between min-h-[100px]">
-          <div className="text-[9px] font-black text-slate-500 uppercase tracking-wider">
+        <div className="insight-card p-2.5 border-l-4 border-l-[var(--google-red)] flex flex-col justify-between min-h-[82px]">
+          <div className="text-[8.5px] font-black text-slate-500 uppercase tracking-wider">
             TOTAL DEBIT (PENGELUARAN)
           </div>
-          <div className="text-lg font-black text-red-600 my-1 font-mono">
+          <div className="text-base font-black text-red-600 my-0.5 font-mono">
             {formatIDR(totalDebit)}
           </div>
-          <div className="text-[9px] font-bold text-red-600 flex items-center gap-1">
+          <div className="text-[8px] font-bold text-red-600 flex items-center gap-1">
             <span>●</span> {filteredTransactions.filter((t) => t.debit > 0).length} Transaksi Keluar
           </div>
         </div>
 
         {/* Total Credit / Pemasukan */}
-        <div className="insight-card p-3 border-l-5 border-l-[var(--google-green)] flex flex-col justify-between min-h-[100px]">
-          <div className="text-[9px] font-black text-slate-500 uppercase tracking-wider">
+        <div className="insight-card p-2.5 border-l-4 border-l-[var(--google-green)] flex flex-col justify-between min-h-[82px]">
+          <div className="text-[8.5px] font-black text-slate-500 uppercase tracking-wider">
             TOTAL KREDIT (PEMASUKAN)
           </div>
-          <div className="text-lg font-black text-green-600 my-1 font-mono">
+          <div className="text-base font-black text-green-600 my-0.5 font-mono">
             {formatIDR(totalCredit)}
           </div>
-          <div className="text-[9px] font-bold text-green-600 flex items-center gap-1">
+          <div className="text-[8px] font-bold text-green-600 flex items-center gap-1">
             <span>●</span> {filteredTransactions.filter((t) => t.credit > 0).length} Transaksi Masuk
           </div>
         </div>
@@ -232,21 +232,21 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             backgroundColor: netBalance < 0 ? "#dc2626" : netBalance > 0 ? "#16a34a" : undefined,
             color: netBalance !== 0 ? "#ffffff" : undefined,
           }}
-          className={`insight-card p-3 border-l-5 flex flex-col justify-between min-h-[100px] transition-all duration-200 ${
+          className={`insight-card p-2.5 border-l-4 flex flex-col justify-between min-h-[82px] transition-all duration-200 ${
             netBalance < 0
-              ? "border-l-red-950 text-white shadow-[4px_4px_0_#000]"
+              ? "border-l-red-950 text-white shadow-[3px_3px_0_#000]"
               : netBalance > 0
-              ? "border-l-green-950 text-white shadow-[4px_4px_0_#000]"
+              ? "border-l-green-950 text-white shadow-[3px_3px_0_#000]"
               : "bg-white dark:bg-slate-800 border-l-[var(--google-blue)] text-slate-900 dark:text-white"
           }`}
         >
-          <div className={`text-[9px] font-black uppercase tracking-wider ${netBalance !== 0 ? "text-white/90" : "text-slate-500"}`}>
+          <div className={`text-[8.5px] font-black uppercase tracking-wider ${netBalance !== 0 ? "text-white/90" : "text-slate-500"}`}>
             NET BALANCE (ARUS BERSIH)
           </div>
-          <div className="text-lg font-black font-mono my-1 text-white">
+          <div className="text-base font-black font-mono my-0.5 text-white">
             {netBalance < 0 ? "Rp 0" : formatIDR(netBalance)}
           </div>
-          <div className={`text-[9px] font-bold ${netBalance !== 0 ? "text-white/90" : "text-slate-500"}`}>
+          <div className={`text-[8px] font-bold truncate ${netBalance !== 0 ? "text-white/90" : "text-slate-500"}`}>
             {netBalance < 0
               ? `Defisit (${formatIDR(netBalance)}) -> Set Rp 0`
               : netBalance > 0
