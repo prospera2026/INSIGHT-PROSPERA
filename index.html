@@ -357,10 +357,10 @@
         </table>
       </div>
 
-      <!-- PAGINATION CONTROLS (MAX 7 DATA PER HALAMAN) -->
+      <!-- PAGINATION CONTROLS (MAX 6 DATA PER HALAMAN) -->
       <div id="paginationControls" class="insight-card" style="display:flex;align-items:center;justify-content:space-between;padding:10px;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
         <div style="font-size:10.5px;font-weight:800;color:var(--ink-600);">
-          Menampilkan <span id="pageInfoText" style="color:var(--brand-blue);">0 - 0</span> dari <span id="totalTxText">0</span> transaksi (Max 7/hal)
+          Menampilkan <span id="pageInfoText" style="color:var(--brand-blue);">0 - 0</span> dari <span id="totalTxText">0</span> transaksi (Max 6/hal)
         </div>
         <div style="display:flex;align-items:center;gap:6px;">
           <button id="btnPrevPage" onclick="changePage(-1)" class="insight-button" style="width:auto;padding:4px 10px;font-size:10px;">← SEBELUMNYA</button>
@@ -798,7 +798,7 @@
   }
 
   let currentPage = 1;
-  const ITEMS_PER_PAGE = 7;
+  const ITEMS_PER_PAGE = 6;
 
   function renderTxTable() {
     const tbody = document.getElementById('txTableBody');
