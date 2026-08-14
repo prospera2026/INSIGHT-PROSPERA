@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - INSIGHT PROSPERA</title>
+  <style>
+    :root {
+      --bg-page: #f8fafc;
+      --panel-white: #ffffff;
+      --border: #000000;
+      --ink-900: #0f172a;
+      --brand-blue: #4285F4;
+      --brand-green: #34A853;
+      --brand-red: #EA4335;
+      --insight-shadow: 4px 4px 0px #000000;
+    }
+
+    .dark {
+      --bg-page: #090d16;
+      --panel-white: #1e293b;
+      --border: #334155;
+      --ink-900: #f8fafc;
+      --insight-shadow: 4px 4px 0px #000000;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    body { background-color: var(--bg-page); color: var(--ink-900); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 16px; }
+
+    .auth-card {
+      width: 100%; max-width: 400px;
+      background: var(--panel-white);
+      border: 3px solid var(--border);
+      box-shadow: var(--insight-shadow);
+      padding: 24px;
+    }
+
+    .insight-input {
+      width: 100%; padding: 10px; border: 2px solid var(--border);
+      background: var(--bg-page); color: var(--ink-900); font-weight: 700;
+      outline: none; font-size: 13px; margin-top: 4px;
+    }
+
+    .insight-button {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 10px; font-size: 11px; font-weight: 900; text-transform: uppercase;
+      border: 2px solid var(--border); box-shadow: 2px 2px 0px #000;
+      cursor: pointer; transition: all 0.1s ease; width: 100%;
+    }
+    .insight-button--primary { background: var(--brand-blue); color: #fff; }
+    .insight-button:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 #000; }
+    .tab-inactive { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <div class="auth-card">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+      <div style="width:28px;height:28px;background:var(--brand-blue);border:2px solid #000;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;box-shadow:2px 2px 0 #000;">P</div>
+      <span style="font-weight:900;font-size:16px;letter-spacing:0.5px;">INSIGHT PROSPERA</span>
+    </div>
+
+    <div style="font-size:9px;font-weight:800;color:var(--brand-blue);text-transform:uppercase;">PORTAL OTENTIKASI</div>
+    <h1 style="font-size:16px;font-weight:900;margin-bottom:14px;">MASUK SISTEM</h1>
+
+    <div id="loginAlert" style="display:none;padding:8px;background:#fee2e2;border:2px solid #ef4444;color:#b91c1c;font-size:10.5px;font-weight:700;margin-bottom:12px;"></div>
+
+    <div style="display:flex;border:2px solid #000;background:#f1f5f9;padding:2px;margin-bottom:14px;">
+      <button id="btnTabKey" onclick="switchTab('key')" style="flex:1;padding:7px;font-size:10.5px;font-weight:800;border:none;background:#fff;border:1.5px solid #000;cursor:pointer;">Access Key (Member)</button>
+      <button id="btnTabAdmin" onclick="switchTab('admin')" style="flex:1;padding:7px;font-size:10.5px;font-weight:800;border:none;background:transparent;cursor:pointer;">Admin Panel</button>
+    </div>
+
+    <!-- FORM KEY -->
+    <form id="formKey" onsubmit="handleKeyLogin(event)">
+      <div style="margin-bottom:14px;">
+        <label style="display:block;font-size:9.5px;font-weight:800;">ACCESS KEY MEMBER</label>
+        <input id="inputKey" type="text" placeholder="AGUNG69" maxlength="7" class="insight-input" style="text-align:center;font-weight:900;font-size:14px;letter-spacing:2px;color:var(--brand-blue);" value="AGUNG69">
+      </div>
+      <button type="submit" class="insight-button insight-button--primary">MASUK KE DASHBOARD →</button>
+    </form>
+
+    <!-- FORM ADMIN -->
+    <form id="formAdmin" onsubmit="handleAdminLogin(event)" class="tab-inactive">
+      <div style="margin-bottom:10px;">
+        <label style="display:block;font-size:9.5px;font-weight:800;">EMAIL ADMIN</label>
+        <input id="inputAdminUser" type="text" placeholder="prospera@gmail.com" class="insight-input" value="prospera@gmail.com">
+      </div>
+      <div style="margin-bottom:14px;">
+        <label style="display:block;font-size:9.5px;font-weight:800;">PASSWORD ADMIN</label>
+        <input id="inputAdminPass" type="password" placeholder="prospera123" class="insight-input" value="prospera123">
+      </div>
+      <button type="submit" class="insight-button insight-button--primary">LOGIN ADMIN PANEL →</button>
+    </form>
+  </div>
+
+  <script>
+    // Cek jika sudah login, langsung lempar ke index.html (Dashboard Utama)
+    document.addEventListener("DOMContentLoaded", function() {
+      const role = localStorage.getItem('prospera_role');
+      const session = localStorage.getItem('prospera_session');
+      if (role && session) {
+        window.location.href = 'index.html';
+      }
+    });
+
+    function switchTab(tab) {
+      document.getElementById('formKey').classList.toggle('tab-inactive', tab !== 'key');
+      document.getElementById('formAdmin').classList.toggle('tab-inactive', tab !== 'admin');
+      document.getElementById('btnTabKey').style.background = tab === 'key' ? '#fff' : 'transparent';
+      document.getElementById('btnTabAdmin').style.background = tab === 'admin' ? '#fff' : 'transparent';
+    }
+
+    function handleKeyLogin(e) {
+      e.preventDefault();
+      const key = document.getElementById('inputKey').value.trim().toUpperCase();
+      if (key === 'AGUNG69') {
+        localStorage.setItem('prospera_role', 'user');
+        localStorage.setItem('prospera_session', 'active_' + Date.now());
+        window.location.href = 'index.html';
+      } else {
+        showAlert('Access Key Salah! Kode akses: AGUNG69');
+      }
+    }
+
+    function handleAdminLogin(e) {
+      e.preventDefault();
+      const user = document.getElementById('inputAdminUser').value.trim();
+      const pass = document.getElementById('inputAdminPass').value.trim();
+      if (user === 'prospera@gmail.com' && pass === 'prospera123') {
+        localStorage.setItem('prospera_role', 'admin');
+        localStorage.setItem('prospera_session', 'active_' + Date.now());
+        window.location.href = 'index.html';
+      } else {
+        showAlert('Kredensial Admin Salah!');
+      }
+    }
+
+    function showAlert(msg) {
+      const el = document.getElementById('loginAlert');
+      el.innerText = msg; el.style.display = 'block';
+    }
+  </script>
+</body>
+</html>
