@@ -260,14 +260,23 @@
     </div>
 
     <!-- Sidebar Footer -->
-    <div style="margin-top:20px;display:flex;flex-direction:column;gap:12px;padding-top:14px;border-top:3px solid var(--border);">
+    <div style="margin-top:20px;display:flex;flex-direction:column;gap:10px;padding-top:14px;border-top:3px solid var(--border);">
+      <!-- Dark/Light Mode Toggle Button -->
+      <button onclick="toggleDarkMode()" id="btnThemeToggle" class="insight-button" style="justify-content:space-between;padding:8px 10px;font-size:10.5px;">
+        <span style="display:flex;align-items:center;gap:6px;">
+          <span id="themeIcon">🌙</span>
+          <span id="themeLabel">DARK MODE</span>
+        </span>
+        <span class="insight-badge" style="font-size:8px;padding:1px 4px;background:#e2e8f0;color:#000;">TOGGLE</span>
+      </button>
+
       <!-- Database Status -->
-      <div style="padding:10px;background:#f1f5f9;border:2px solid var(--border);box-shadow:2px 2px 0 var(--insight-shadow);">
+      <div style="padding:10px;background:var(--bg-page);border:2px solid var(--border);box-shadow:2px 2px 0 var(--insight-shadow);">
         <div style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:800;">
           <span style="color:var(--brand-green);">●</span>
           <span>STATUS DATA</span>
         </div>
-        <p style="font-size:9.5px;color:#64748b;margin-top:4px;font-weight:700;">
+        <p style="font-size:9.5px;color:var(--ink-600);margin-top:4px;font-weight:700;">
           Supabase Cloud / Local Cache
         </p>
       </div>
@@ -610,7 +619,33 @@
     document.getElementById('authStage').style.display = 'flex';
   }
 
+  // 🟢 DARK / LIGHT MODE TOGGLE LOGIC
+  function toggleDarkMode() {
+    const htmlEl = document.documentElement;
+    const isDark = htmlEl.classList.toggle('dark');
+    localStorage.setItem('prospera_theme', isDark ? 'dark' : 'light');
+    updateThemeUI(isDark);
+  }
+
+  function updateThemeUI(isDark) {
+    const iconEl = document.getElementById('themeIcon');
+    const labelEl = document.getElementById('themeLabel');
+    if (iconEl && labelEl) {
+      iconEl.innerText = isDark ? '☀️' : '🌙';
+      labelEl.innerText = isDark ? 'LIGHT MODE' : 'DARK MODE';
+    }
+  }
+
   document.addEventListener("DOMContentLoaded", function() {
+    const savedTheme = localStorage.getItem('prospera_theme');
+    if (savedTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+      updateThemeUI(true);
+    } else {
+      document.documentElement.classList.remove('dark');
+      updateThemeUI(false);
+    }
+
     const savedRole = localStorage.getItem('prospera_role');
     const savedSession = localStorage.getItem('prospera_session');
     if (savedRole && savedSession) {
