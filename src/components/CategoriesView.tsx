@@ -2,12 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import { Transaction } from "@/lib/transactions";
-import { Plus, CheckCircle2, Edit2, Trash2 } from "lucide-react";
+import { Plus, CheckCircle2, Edit2, Trash2, Tag, Layers } from "lucide-react";
 
 interface CategoriesViewProps {
   transactions: Transaction[];
-  customCategories: string[];
-  setCustomCategories: React.Dispatch<React.SetStateAction<string[]>>;
+  customCategories?: string[];
+  setCustomCategories?: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 export const CategoriesView: React.FC<CategoriesViewProps> = ({
@@ -82,86 +82,117 @@ export const CategoriesView: React.FC<CategoriesViewProps> = ({
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4 max-w-5xl mx-auto">
       {/* Header Banner */}
-      <div className="insight-card p-4 bg-slate-900 text-white border-3 border-black">
+      <div className="insight-card p-3.5 bg-slate-900 text-white border-3 border-black">
         <div className="flex items-center gap-2 mb-1">
           <span className="inline-block px-1.5 py-0.2 bg-[var(--google-blue)] text-white text-[8.5px] font-extrabold tracking-wider uppercase border border-black">
             MANAJEMEN KATEGORI
           </span>
         </div>
-        <h1 className="text-base font-black tracking-tight">MANAJEMEN KATEGORI TRANSAKSI</h1>
-        <p className="text-[11px] text-slate-300 font-medium mt-0.5">
-          Kelola, edit, dan hapus kategori pengelompokan laporan transaksi.
+        <h1 className="text-sm font-black tracking-tight leading-tight">MANAJEMEN KATEGORI TRANSAKSI</h1>
+        <p className="text-[10.5px] text-slate-300 font-medium mt-0.5">
+          Kelola, edit, dan sesuaikan tag kategori pengelompokan laporan arus kas transaksi.
         </p>
       </div>
 
-      {/* Form Tambah Kategori Baru */}
-      <div className="insight-card p-4">
-        <h3 className="text-xs font-black uppercase tracking-wider mb-2.5 flex items-center gap-2">
-          <Plus className="w-4 h-4 text-[var(--google-blue)]" /> TAMBAH KATEGORI BARU
-        </h3>
+      {/* Grid Split: Form Tambah (Kiri) & Daftar Kategori (Kanan) */}
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+        {/* Kolom Kiri: Form Input & Info */}
+        <div className="md:col-span-5 space-y-4">
+          <div className="insight-card p-3.5">
+            <h3 className="text-xs font-black uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <Plus className="w-3.5 h-3.5 text-[var(--google-blue)]" /> TAMBAH KATEGORI
+            </h3>
+            <p className="text-[10px] text-slate-500 font-medium mb-3">
+              Kategori baru akan langsung dapat digunakan untuk memfilter transaksi.
+            </p>
 
-        {successMsg && (
-          <div className="p-2.5 bg-green-100 border-2 border-green-500 text-green-700 text-xs font-bold flex items-center gap-2 mb-3">
-            <CheckCircle2 className="w-4 h-4 text-green-600" />
-            <span>{successMsg}</span>
-          </div>
-        )}
-
-        <form onSubmit={handleAddCategory} className="flex gap-2">
-          <input
-            type="text"
-            placeholder="Nama kategori baru..."
-            value={newCategoryName}
-            onChange={(e) => setNewCategoryName(e.target.value)}
-            className="insight-input flex-1 py-1.5 text-xs"
-          />
-          <button
-            type="submit"
-            className="insight-button insight-button--success text-xs py-1.5 px-3 whitespace-nowrap"
-          >
-            + SIMPAN
-          </button>
-        </form>
-      </div>
-
-      {/* Daftar Kategori System dengan Edit & Delete */}
-      <div className="insight-card p-4">
-        <h3 className="text-xs font-black uppercase tracking-wider mb-3 pb-2 border-b-2 border-black dark:border-slate-700">
-          DAFTAR KATEGORI SYSTEM ({categories.length})
-        </h3>
-        <div className="flex flex-col gap-2">
-          {categories.map((c, idx) => {
-            const count = transactions.filter((t) => t.category === c).length;
-            return (
-              <div
-                key={idx}
-                className="flex items-center justify-between p-2.5 bg-white dark:bg-slate-800 border-2 border-black shadow-[2px_2px_0_#000] max-w-lg"
-              >
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-black">🏷️ {c}</span>
-                  <span className="insight-badge badge-blue text-[8px] py-0.5 px-1.5">
-                    {count} Transaksi
-                  </span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <button
-                    onClick={() => handleEditCategory(idx)}
-                    className="insight-button insight-button--primary text-[9px] py-1 px-2 flex items-center gap-1"
-                  >
-                    <Edit2 className="w-3 h-3" /> EDIT
-                  </button>
-                  <button
-                    onClick={() => handleDeleteCategory(idx)}
-                    className="insight-button insight-button--danger text-[9px] py-1 px-2 flex items-center gap-1"
-                  >
-                    <Trash2 className="w-3 h-3" /> HAPUS
-                  </button>
-                </div>
+            {successMsg && (
+              <div className="p-2 bg-green-100 dark:bg-green-950/50 border-2 border-green-500 text-green-800 dark:text-green-200 text-xs font-bold flex items-center gap-2 mb-3">
+                <CheckCircle2 className="w-3.5 h-3.5 text-green-600" />
+                <span>{successMsg}</span>
               </div>
-            );
-          })}
+            )}
+
+            <form onSubmit={handleAddCategory} className="space-y-2">
+              <input
+                type="text"
+                placeholder="Contoh: Operasional, Gaji, Vendor..."
+                value={newCategoryName}
+                onChange={(e) => setNewCategoryName(e.target.value)}
+                className="insight-input w-full py-1.5 px-2 text-xs font-sans"
+              />
+              <button
+                type="submit"
+                className="insight-button insight-button--success w-full text-xs py-1.5 justify-center gap-1 font-sans"
+              >
+                <Plus className="w-3.5 h-3.5" /> SIMPAN KATEGORI
+              </button>
+            </form>
+          </div>
+
+          <div className="insight-card p-3 bg-slate-100 dark:bg-slate-800/80 border-2 border-black">
+            <div className="flex items-center gap-1.5 text-xs font-black mb-1">
+              <Layers className="w-3.5 h-3.5 text-[var(--google-blue)]" /> TOTAL KATEGORI AKTIF
+            </div>
+            <div className="text-xl font-black text-[var(--google-blue)] font-mono">
+              {categories.length} <span className="text-xs text-slate-500 font-sans">Kategori Terdaftar</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Kolom Kanan: Grid Card Daftar Kategori (2 Kolom Rapi) */}
+        <div className="md:col-span-7">
+          <div className="insight-card p-3.5 min-h-[360px] flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-3 pb-2 border-b-2 border-black dark:border-slate-700">
+                <h3 className="text-xs font-black uppercase tracking-wide flex items-center gap-1.5">
+                  <Tag className="w-3.5 h-3.5 text-[var(--google-blue)]" /> DAFTAR KATEGORI SYSTEM
+                </h3>
+                <span className="insight-badge badge-blue text-[8px] py-0.5 px-1.5 font-mono">
+                  {categories.length} ITEMS
+                </span>
+              </div>
+
+              {/* Responsive 2-Column Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {categories.map((c, idx) => {
+                  const count = transactions.filter((t) => t.category === c).length;
+                  return (
+                    <div
+                      key={idx}
+                      className="p-2 bg-white dark:bg-slate-800 border-2 border-black shadow-[2px_2px_0_#000] flex flex-col justify-between gap-1.5"
+                    >
+                      <div className="flex items-start justify-between gap-1">
+                        <span className="text-[11px] font-black font-sans leading-snug line-clamp-1">
+                          🏷️ {c}
+                        </span>
+                        <span className="insight-badge badge-blue text-[7.5px] py-0 px-1 whitespace-nowrap font-mono">
+                          {count} Trx
+                        </span>
+                      </div>
+
+                      <div className="flex items-center justify-end gap-1 pt-1 border-t border-slate-200 dark:border-slate-700">
+                        <button
+                          onClick={() => handleEditCategory(idx)}
+                          className="insight-button insight-button--primary text-[8.5px] py-0.5 px-1.5 flex items-center gap-0.5 font-sans"
+                        >
+                          <Edit2 className="w-2.5 h-2.5" /> EDIT
+                        </button>
+                        <button
+                          onClick={() => handleDeleteCategory(idx)}
+                          className="insight-button insight-button--danger text-[8.5px] py-0.5 px-1.5 flex items-center gap-0.5 font-sans"
+                        >
+                          <Trash2 className="w-2.5 h-2.5" /> HAPUS
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
