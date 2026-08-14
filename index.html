@@ -310,8 +310,8 @@
           <div id="dashCredit" style="font-size:16px;font-weight:900;color:#22c55e;margin:2px 0;">Rp 0</div>
           <div id="dashCreditCount" style="font-size:8.5px;font-weight:700;color:#22c55e;">0 Transaksi</div>
         </div>
-        <div class="insight-card" style="border-left:5px solid var(--brand-blue);padding:10px;">
-          <div style="font-size:8.5px;font-weight:800;color:#64748b;">NET BALANCE (ARUS BERSIH)</div>
+        <div id="dashNetCard" class="insight-card" style="border-left:5px solid var(--brand-blue);padding:10px;transition:all 0.2s ease;">
+          <div id="dashNetTitle" style="font-size:8.5px;font-weight:800;color:#64748b;">NET BALANCE (ARUS BERSIH)</div>
           <div id="dashNet" style="font-size:16px;font-weight:900;margin:2px 0;">Rp 0</div>
           <div id="dashNetStatus" style="font-size:8.5px;font-weight:700;color:#64748b;">Status: OK</div>
         </div>
@@ -716,7 +716,45 @@
 
     document.getElementById('dashDebit').innerText = formatIDR(debit);
     document.getElementById('dashCredit').innerText = formatIDR(credit);
-    document.getElementById('dashNet').innerText = formatIDR(net);
+    
+    // Dynamic Net Balance Rule:
+    const netCard = document.getElementById('dashNetCard');
+    const netValEl = document.getElementById('dashNet');
+    const netTitle = document.getElementById('dashNetTitle');
+    const netStatus = document.getElementById('dashNetStatus');
+
+    if (net < 0) {
+      // Rule: Jika minus = 0 saja, background merah, text putih
+      netValEl.innerText = formatIDR(0);
+      netCard.style.background = "#dc2626";
+      netCard.style.borderColor = "#991b1b";
+      netCard.style.borderLeft = "5px solid #7f1d1d";
+      netValEl.style.color = "#ffffff";
+      netTitle.style.color = "#fef2f2";
+      netStatus.style.color = "#fee2e2";
+      netStatus.innerText = `Defisit / Minus (${formatIDR(net)}) -> Ditampilkan Rp 0`;
+    } else if (net > 0) {
+      // Rule: Jika untung = background hijau, font putih
+      netValEl.innerText = formatIDR(net);
+      netCard.style.background = "#16a34a";
+      netCard.style.borderColor = "#15803d";
+      netCard.style.borderLeft = "5px solid #14532d";
+      netValEl.style.color = "#ffffff";
+      netTitle.style.color = "#f0fdf4";
+      netStatus.style.color = "#dcfce7";
+      netStatus.innerText = "Status: Surplus / Untung (Positif)";
+    } else {
+      // Netral / Rp 0
+      netValEl.innerText = formatIDR(0);
+      netCard.style.background = "var(--panel-white)";
+      netCard.style.borderColor = "var(--border)";
+      netCard.style.borderLeft = "5px solid var(--brand-blue)";
+      netValEl.style.color = "var(--ink-900)";
+      netTitle.style.color = "#64748b";
+      netStatus.style.color = "#64748b";
+      netStatus.innerText = "Status: OK / Netral";
+    }
+
     document.getElementById('dashDebitCount').innerText = `${transactions.filter(t=>t.debit>0).length} Transaksi`;
     document.getElementById('dashCreditCount').innerText = `${transactions.filter(t=>t.credit>0).length} Transaksi`;
 
