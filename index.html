@@ -337,10 +337,51 @@
         </div>
       </div>
 
-      <!-- CHART AREA -->
-      <div class="insight-card">
-        <h3 style="font-size:11px;font-weight:800;margin-bottom:10px;text-transform:uppercase;">📊 GRAFIK ARUS KAS PER TANGGAL</h3>
-        <div style="height:200px;"><canvas id="cashFlowChart"></canvas></div>
+      <!-- METADATA 2 & METADATA 3 BALANCED GRID SECTION -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));gap:12px;margin-bottom:16px;">
+        <!-- METADATA 2: REKAPITULASI BULANAN JAN-DES -->
+        <div class="insight-card" style="margin-bottom:0;padding:12px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding-bottom:6px;border-bottom:2px solid var(--border);">
+            <h3 style="font-size:11px;font-weight:900;text-transform:uppercase;">📅 METADATA 2: REKAP BULANAN JAN-DES</h3>
+            <span class="insight-badge badge-blue" style="font-size:8px;">12 BULAN</span>
+          </div>
+          <div class="table-responsive" style="max-height:260px;">
+            <table style="min-width:100%;font-size:10px;">
+              <thead>
+                <tr>
+                  <th style="padding:4px 6px;">Bulan</th>
+                  <th style="padding:4px 6px;text-align:right;color:#f87171;">Debit (Pengeluaran)</th>
+                  <th style="padding:4px 6px;text-align:right;color:#4ade80;">Credit (Pemasukan)</th>
+                </tr>
+              </thead>
+              <tbody id="meta2TableBody">
+                <!-- Populated dynamically by renderDashboard -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- METADATA 3: NILAI TRANSAKSI TOP 5 -->
+        <div class="insight-card" style="margin-bottom:0;padding:12px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding-bottom:6px;border-bottom:2px solid var(--border);">
+            <h3 style="font-size:11px;font-weight:900;text-transform:uppercase;">🏆 METADATA 3: TOP 5 NILAI TRANSAKSI</h3>
+            <span class="insight-badge badge-green" style="font-size:8px;">TOP 5 NOMINAL</span>
+          </div>
+          <div class="table-responsive" style="max-height:260px;">
+            <table style="min-width:100%;font-size:10px;">
+              <thead>
+                <tr>
+                  <th style="padding:4px 6px;">No</th>
+                  <th style="padding:4px 6px;">Deskripsi</th>
+                  <th style="padding:4px 6px;text-align:right;">Nominal</th>
+                </tr>
+              </thead>
+              <tbody id="meta3TableBody">
+                <!-- Populated dynamically by renderDashboard -->
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -877,31 +918,65 @@
     document.getElementById('dashDebitCount').innerText = `${filteredTx.filter(t=>t.debit>0).length} Transaksi`;
     document.getElementById('dashCreditCount').innerText = `${filteredTx.filter(t=>t.credit>0).length} Transaksi`;
 
-    const dateMap = {};
-    filteredTx.forEach(t => {
-      const d = t.formattedDate || parseAndFormatDate(t.postDate);
-      if (!dateMap[d]) dateMap[d] = { debit: 0, credit: 0 };
-      dateMap[d].debit += t.debit;
-      dateMap[d].credit += t.credit;
+    // 🟢 METADATA 2: REKAPITULASI BULANAN JAN-DES (DEBIT & CREDIT)
+    const meta2Tbody = document.getElementById('meta2TableBody');
+    const monthlyMap = {};
+    MONTH_NAMES.forEach(m => monthlyMap[m] = { debit: 0, credit: 0 });
+
+    transactions.forEach(t => {
+      const dateParts = (t.formattedDate || parseAndFormatDate(t.postDate)).split('/');
+      if (dateParts.length === 3) {
+        const monthIdx = parseInt(dateParts[1], 10) - 1;
+        if (monthIdx >= 0 && monthIdx < 12) {
+          const mName = MONTH_NAMES[monthIdx];
+          monthlyMap[mName].debit += t.debit;
+          monthlyMap[mName].credit += t.credit;
+        }
+      }
     });
 
-    const labels = Object.keys(dateMap);
-    const debitData = labels.map(l => dateMap[l].debit);
-    const creditData = labels.map(l => dateMap[l].credit);
+    if (meta2Tbody) {
+      meta2Tbody.innerHTML = MONTH_NAMES.map(mName => {
+        const d = monthlyMap[mName].debit;
+        const c = monthlyMap[mName].credit;
+        return `
+          <tr>
+            <td style="padding:4px 6px;font-weight:800;">${mName}</td>
+            <td style="padding:4px 6px;text-align:right;color:#dc2626;font-weight:800;">${d > 0 ? formatIDR(d) : '-'}</td>
+            <td style="padding:4px 6px;text-align:right;color:#16a34a;font-weight:800;">${c > 0 ? formatIDR(c) : '-'}</td>
+          </tr>
+        `;
+      }).join('');
+    }
 
-    if (chartInstance) chartInstance.destroy();
-    const ctx = document.getElementById('cashFlowChart').getContext('2d');
-    chartInstance = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels,
-        datasets: [
-          { label: 'Pengeluaran (Debit)', data: debitData, backgroundColor: '#EA4335' },
-          { label: 'Pemasukan (Kredit)', data: creditData, backgroundColor: '#34A853' }
-        ]
-      },
-      options: { responsive: true, maintainAspectRatio: false }
-    });
+    // 🟢 METADATA 3: TOP 5 NILAI TRANSAKSI (PAS RATA SAMA METADATA 2)
+    const meta3Tbody = document.getElementById('meta3TableBody');
+    const top5Transactions = [...transactions]
+      .sort((a, b) => Math.max(b.debit, b.credit) - Math.max(a.debit, a.credit))
+      .slice(0, 5);
+
+    if (meta3Tbody) {
+      if (top5Transactions.length === 0) {
+        meta3Tbody.innerHTML = '<tr><td colSpan="3" style="text-align:center;padding:12px;">Belum ada transaksi.</td></tr>';
+      } else {
+        meta3Tbody.innerHTML = top5Transactions.map((t, idx) => {
+          const val = Math.max(t.debit, t.credit);
+          const isDebit = t.debit > t.credit;
+          return `
+            <tr>
+              <td style="padding:4px 6px;font-weight:800;">#${idx + 1}</td>
+              <td style="padding:4px 6px;">
+                <div style="font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px;">${t.description}</div>
+                <div style="font-size:8px;color:#64748b;">${t.journalNo} | ${t.postDate}</div>
+              </td>
+              <td style="padding:4px 6px;text-align:right;font-weight:900;color:${isDebit ? '#dc2626' : '#16a34a'};">
+                ${formatIDR(val)}
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+    }
   }
 
   let currentPage = 1;
