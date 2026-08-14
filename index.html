@@ -63,12 +63,15 @@
   /* INSIGHT SALES DESIGNED APP STAGE */
   .app-stage { display: none; min-height: 100vh; flex-direction: column; }
 
-  /* HEADER BAR EXACT MATCH INSIGHT SALES */
+  /* HEADER BAR INSIGHT SALES STYLE (SHOW ON MOBILE, HIDE ON DESKTOP) */
   .insight-header {
-    position: sticky; top: 0; z-index: 900; height: 60px;
+    position: sticky; top: 0; z-index: 900; height: 56px;
     display: flex; align-items: center; justify-content: space-between; gap: 12px;
-    border-bottom: 3px solid var(--border); background: var(--panel-white);
+    border-bottom: 3.5px solid var(--border); background: var(--panel-white);
     padding: 0 16px;
+  }
+  @media(min-width: 1024px) {
+    .insight-header { display: none !important; }
   }
 
   /* MOBILE DRAWER SIDEBAR BACKDROP */
@@ -79,7 +82,7 @@
 
   /* INSIGHT SALES SIDEBAR DRAWER */
   .sidebar-drawer {
-    position: fixed; top: 0; bottom: 0; left: 0; width: 280px; z-index: 1001;
+    position: fixed; top: 0; bottom: 0; left: 0; width: 260px; z-index: 1001;
     background: var(--panel-white); border-right: 3.5px solid var(--border);
     transform: translateX(-100%); transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex; flex-direction: column; justify-content: space-between; padding: 16px;
@@ -87,13 +90,16 @@
   }
   .sidebar-drawer.open { transform: translateX(0); }
 
+  .sidebar-close-btn { display: flex; }
+
   @media(min-width: 1024px) {
     .app-stage { flex-direction: row; }
     .sidebar-backdrop { display: none !important; }
     .sidebar-drawer {
-      position: static; transform: none; width: 240px; min-height: 100vh;
+      position: static; transform: none; width: 230px; min-height: 100vh; shrink: 0;
       border-right: 3.5px solid var(--border); box-shadow: none;
     }
+    .sidebar-close-btn { display: none !important; }
   }
 
   .main-content { flex: 1; padding: 16px; overflow-y: auto; }
@@ -233,7 +239,7 @@
           <div style="width:28px;height:28px;background:var(--brand-blue);border:2px solid #000;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;box-shadow:1.5px 1.5px 0 #000;">P</div>
           <span style="font-weight:900;font-size:18px;letter-spacing:1px;">PROSPERA</span>
         </div>
-        <button onclick="closeSidebarDrawer()" style="background:none;border:none;font-weight:900;font-size:18px;cursor:pointer;">✕</button>
+        <button onclick="closeSidebarDrawer()" class="sidebar-close-btn" style="background:none;border:none;font-weight:900;font-size:18px;cursor:pointer;">✕</button>
       </div>
 
       <!-- Navigation Menu -->
