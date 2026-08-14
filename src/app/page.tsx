@@ -18,8 +18,14 @@ export default function Home() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [customCategories, setCustomCategories] = useState<string[]>([]);
 
-  // Persistent session & Supabase data fetch on mount
+  // Persistent session, theme, & Supabase data fetch on mount
   useEffect(() => {
+    const savedTheme = localStorage.getItem("prospera_theme");
+    if (savedTheme === "dark") {
+      setDarkMode(true);
+      document.documentElement.classList.add("dark");
+    }
+
     const savedRole = localStorage.getItem("prospera_role") as "admin" | "user" | null;
     const savedSession = localStorage.getItem("prospera_session");
     if (savedRole && savedSession) {
@@ -36,8 +42,10 @@ export default function Home() {
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add("dark");
+      localStorage.setItem("prospera_theme", "dark");
     } else {
       document.documentElement.classList.remove("dark");
+      localStorage.setItem("prospera_theme", "light");
     }
   }, [darkMode]);
 
