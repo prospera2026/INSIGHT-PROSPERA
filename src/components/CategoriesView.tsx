@@ -195,22 +195,20 @@ export const CategoriesView: React.FC<CategoriesViewProps> = ({
         </div>
 
         {/* Inline Add Category Form */}
-        <form onSubmit={handleAddCategory} className="flex items-center gap-2 w-full md:w-auto">
-          <div className="flex items-center gap-1.5 w-full">
-            <input
-              type="text"
-              placeholder="Nama kategori baru..."
-              value={newCategoryName}
-              onChange={(e) => setNewCategoryName(e.target.value)}
-              className="insight-input py-1 px-2 text-xs font-sans w-full md:w-60"
-            />
-            <button
-              type="submit"
-              className="insight-button insight-button--success text-[10px] py-1 px-3 flex items-center gap-1 whitespace-nowrap"
-            >
-              <Plus className="w-3.5 h-3.5" /> + TAMBAH
-            </button>
-          </div>
+        <form onSubmit={handleAddCategory} className="flex items-center gap-1.5 w-full md:w-auto">
+          <input
+            type="text"
+            placeholder="Ketik nama kategori baru..."
+            value={newCategoryName}
+            onChange={(e) => setNewCategoryName(e.target.value)}
+            className="insight-input py-1 px-2.5 text-xs font-sans w-full md:w-64 h-8"
+          />
+          <button
+            type="submit"
+            className="insight-button insight-button--success text-[10px] py-1 px-3 flex items-center gap-1 whitespace-nowrap h-8 font-sans font-black"
+          >
+            <Plus className="w-3.5 h-3.5" /> TAMBAH
+          </button>
         </form>
       </div>
 
