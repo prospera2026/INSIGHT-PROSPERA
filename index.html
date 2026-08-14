@@ -346,7 +346,7 @@
         <input type="text" id="txSearch" placeholder="Cari deskripsi, No Jurnal..." class="insight-input" style="font-size:11px;" onkeyup="renderTxTable()">
       </div>
 
-      <div class="insight-card table-responsive" style="padding:0;">
+      <div class="insight-card table-responsive" style="padding:0;margin-bottom:12px;">
         <table>
           <thead>
             <tr>
@@ -355,6 +355,18 @@
           </thead>
           <tbody id="txTableBody"></tbody>
         </table>
+      </div>
+
+      <!-- PAGINATION CONTROLS (MAX 7 DATA PER HALAMAN) -->
+      <div id="paginationControls" class="insight-card" style="display:flex;align-items:center;justify-content:space-between;padding:10px;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
+        <div style="font-size:10.5px;font-weight:800;color:var(--ink-600);">
+          Menampilkan <span id="pageInfoText" style="color:var(--brand-blue);">0 - 0</span> dari <span id="totalTxText">0</span> transaksi (Max 7/hal)
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <button id="btnPrevPage" onclick="changePage(-1)" class="insight-button" style="width:auto;padding:4px 10px;font-size:10px;">← SEBELUMNYA</button>
+          <span id="currentPageBadge" class="insight-badge badge-blue" style="font-size:10px;padding:4px 8px;">Hal 1</span>
+          <button id="btnNextPage" onclick="changePage(1)" class="insight-button" style="width:auto;padding:4px 10px;font-size:10px;">SELANJUTNYA →</button>
+        </div>
       </div>
     </div>
 
@@ -785,17 +797,38 @@
     });
   }
 
+  let currentPage = 1;
+  const ITEMS_PER_PAGE = 7;
+
   function renderTxTable() {
     const tbody = document.getElementById('txTableBody');
     const search = document.getElementById('txSearch').value.toLowerCase();
     const filtered = transactions.filter(t => t.description.toLowerCase().includes(search) || t.journalNo.toLowerCase().includes(search));
 
-    if (filtered.length === 0) {
+    const totalItems = filtered.length;
+    const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE) || 1;
+
+    // Reset page index if current page exceeds total pages
+    if (currentPage > totalPages) currentPage = totalPages;
+    if (currentPage < 1) currentPage = 1;
+
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, totalItems);
+    const paginatedItems = filtered.slice(startIndex, endIndex);
+
+    // Update Pagination UI Labels
+    document.getElementById('totalTxText').innerText = totalItems;
+    document.getElementById('pageInfoText').innerText = totalItems > 0 ? `${startIndex + 1} - ${endIndex}` : '0 - 0';
+    document.getElementById('currentPageBadge').innerText = `Hal ${currentPage} / ${totalPages}`;
+    document.getElementById('btnPrevPage').disabled = currentPage === 1;
+    document.getElementById('btnNextPage').disabled = currentPage === totalPages || totalPages === 0;
+
+    if (paginatedItems.length === 0) {
       tbody.innerHTML = '<tr><td colSpan="7" style="text-align:center;padding:16px;">Belum ada data transaksi valid. Silakan Upload CSV.</td></tr>';
       return;
     }
 
-    tbody.innerHTML = filtered.map(t => `
+    tbody.innerHTML = paginatedItems.map(t => `
       <tr>
         <td>${t.postDate}</td>
         <td><strong>${t.journalNo}</strong></td>
@@ -808,6 +841,11 @@
         </td>
       </tr>
     `).join('');
+  }
+
+  function changePage(direction) {
+    currentPage += direction;
+    renderTxTable();
   }
 
   function viewDetail(id) {
