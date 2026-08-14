@@ -142,15 +142,15 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
 
         {/* Proportional & Right-Aligned Compact Filters */}
-        <div className="flex items-center gap-2.5 bg-slate-800/90 p-2.5 border-2 border-[var(--google-blue)] shadow-[2px_2px_0_#000] ml-auto w-full sm:w-auto justify-end">
-          <div className="w-32 sm:w-36">
-            <label className="block text-[9px] font-black text-slate-400 mb-1 uppercase tracking-wider flex items-center gap-1">
-              <Filter className="w-3 h-3 text-[var(--google-blue)]" /> PERIODE
+        <div className="flex items-center gap-2.5 bg-slate-800 p-2 border-2 border-[var(--google-blue)] shadow-[2px_2px_0_#000] ml-auto w-full sm:w-auto justify-end">
+          <div className="w-28 sm:w-32">
+            <label className="block text-[8px] font-black text-slate-300 mb-0.5 uppercase tracking-wider flex items-center gap-1 font-sans">
+              <Filter className="w-2.5 h-2.5 text-[var(--google-blue)]" /> PERIODE
             </label>
             <select
               value={filterType}
               onChange={handleFilterTypeChange}
-              className="insight-input px-2 py-1 text-xs font-bold bg-white text-slate-900 border-2 border-black h-8 rounded-none focus:outline-none w-full cursor-pointer"
+              className="px-1.5 py-1 text-[11px] font-extrabold bg-white text-black border-2 border-black h-7 rounded-none focus:outline-none w-full cursor-pointer font-sans"
             >
               <option value="monthly">Bulanan</option>
               <option value="quarterly">Kuartal</option>
@@ -158,14 +158,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </select>
           </div>
 
-          <div className="w-40 sm:w-48">
-            <label className="block text-[9px] font-black text-slate-400 mb-1 uppercase tracking-wider flex items-center gap-1">
-              <Calendar className="w-3 h-3 text-[var(--google-blue)]" /> PILIH PERIODE
+          <div className="w-36 sm:w-44">
+            <label className="block text-[8px] font-black text-slate-300 mb-0.5 uppercase tracking-wider flex items-center gap-1 font-sans">
+              <Calendar className="w-2.5 h-2.5 text-[var(--google-blue)]" /> PILIH PERIODE
             </label>
             <select
               value={filterValue}
               onChange={(e) => setFilterValue(e.target.value)}
-              className="insight-input px-2 py-1 text-xs font-bold bg-white text-slate-900 border-2 border-black h-8 rounded-none focus:outline-none w-full cursor-pointer"
+              className="px-1.5 py-1 text-[11px] font-extrabold bg-white text-black border-2 border-black h-7 rounded-none focus:outline-none w-full cursor-pointer font-sans"
             >
               {filterType === "monthly" &&
                 MONTH_NAMES.map((name, idx) => {
@@ -179,10 +179,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
               {filterType === "quarterly" && (
                 <>
-                  <option value={`${currentYear}-Q1`}>Q1 (Jan - Mar) {currentYear}</option>
-                  <option value={`${currentYear}-Q2`}>Q2 (Apr - Jun) {currentYear}</option>
-                  <option value={`${currentYear}-Q3`}>Q3 (Jul - Sep) {currentYear}</option>
-                  <option value={`${currentYear}-Q4`}>Q4 (Okt - Des) {currentYear}</option>
+                  <option value={`${currentYear}-Q1`}>Q1 (Jan-Mar) {currentYear}</option>
+                  <option value={`${currentYear}-Q2`}>Q2 (Apr-Jun) {currentYear}</option>
+                  <option value={`${currentYear}-Q3`}>Q3 (Jul-Sep) {currentYear}</option>
+                  <option value={`${currentYear}-Q4`}>Q4 (Okt-Des) {currentYear}</option>
                 </>
               )}
 
