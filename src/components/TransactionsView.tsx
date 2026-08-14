@@ -28,7 +28,7 @@ export const TransactionsView: React.FC<TransactionsViewProps> = ({
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 6;
 
-  // CSV File Upload Handler
+  // CSV File Upload Handler dengan End-to-End Anti Duplikasi Komprehensif
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -37,37 +37,65 @@ export const TransactionsView: React.FC<TransactionsViewProps> = ({
       header: true,
       skipEmptyLines: true,
       complete: (results) => {
-        const parsed: Transaction[] = [];
+        // 1. Buat Set dari seluruh data transaksi yang sudah ada di database
+        const existingKeySet = new Set(
+          transactions.map(
+            (t) => `${t.journalNo}___${t.postDate}___${t.debit}___${t.credit}___${t.description.trim()}`
+          )
+        );
 
+        const newUniqueRows: Transaction[] = [];
+        let duplicateCount = 0;
+
+        // 2. Iterasi dan cek sampai baris terakhir file CSV
         results.data.forEach((row: any, idx: number) => {
           const debit = parseCurrency(row["Debit"] || row["debit"]);
           const credit = parseCurrency(row["Credit"] || row["credit"]);
-          const desc = row["Description"] || row["description"];
-          const journalNo = row["Journal No."] || row["journal_no"];
+          const desc = (row["Description"] || row["description"] || "").trim();
+          const journalNo = (row["Journal No."] || row["journal_no"] || `J-${idx + 1000}`).trim();
+          const postDate = (row["Post Date"] || row["post_date"] || "-").trim();
 
+          // Abaikan baris kosong
           if (!desc && !journalNo && debit === 0 && credit === 0) return;
 
-          parsed.push({
-            id: `tx-${Date.now()}-${idx}`,
-            postDate: row["Post Date"] || row["post_date"] || "-",
-            valueDate: row["Value Date"] || row["value_date"] || "-",
-            branch: row["Branch"] || row["branch"] || "0989",
-            journalNo: journalNo || `J-${idx + 1000}`,
-            description: desc || "Transaksi CSV",
-            debit,
-            credit,
-            category: autoCategorize(desc),
-          });
+          // Kunci Unik Komprehensif (Jurnal + Tanggal + Debit + Kredit + Deskripsi)
+          const uniqueKey = `${journalNo}___${postDate}___${debit}___${credit}___${desc}`;
+
+          // Jika baris ini sudah ada di database, skip (lewati)
+          if (existingKeySet.has(uniqueKey)) {
+            duplicateCount++;
+          } else {
+            existingKeySet.add(uniqueKey); // Tambahkan ke Set agar tidak duplikat di dalam file yang sama
+            newUniqueRows.push({
+              id: `tx-${Date.now()}-${idx}`,
+              postDate,
+              valueDate: row["Value Date"] || row["value_date"] || "-",
+              branch: row["Branch"] || row["branch"] || "0989",
+              journalNo,
+              description: desc || "Transaksi CSV",
+              debit,
+              credit,
+              category: autoCategorize(desc),
+            });
+          }
         });
 
-        if (parsed.length > 0) {
-          // Gabungkan data baru dengan data yang sudah ada sebelumnya
-          const combined = [...transactions, ...parsed];
+        // 3. Simpan hanya jika ada data unik baru
+        if (newUniqueRows.length > 0) {
+          const combined = [...transactions, ...newUniqueRows];
           uploadCSVToStorage(file, combined).then((savedData) => {
             setTransactions(savedData);
-            setUploadSuccessMessage(`Berhasil menambahkan ${parsed.length} baris data dari file "${file.name}"! Total data: ${savedData.length}`);
-            setTimeout(() => setUploadSuccessMessage(null), 5000);
+            const dupInfo = duplicateCount > 0 ? ` (${duplicateCount} data duplikat dilewati)` : "";
+            setUploadSuccessMessage(
+              `Berhasil menambahkan ${newUniqueRows.length} data baru dari "${file.name}"${dupInfo}! Total transaksi: ${savedData.length}`
+            );
+            setTimeout(() => setUploadSuccessMessage(null), 6000);
           });
+        } else {
+          setUploadSuccessMessage(
+            `Semua baris data (${duplicateCount} baris) pada file "${file.name}" sudah ada di database! Tidak ada data duplikat yang ditambahkan.`
+          );
+          setTimeout(() => setUploadSuccessMessage(null), 6000);
         }
       },
     });
