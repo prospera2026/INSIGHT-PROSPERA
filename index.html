@@ -593,7 +593,8 @@
   function enterApp(role = 'user') {
     localStorage.setItem('prospera_role', role);
     localStorage.setItem('prospera_session', 'active_' + Date.now());
-    document.getElementById('authStage').style.display = 'none';
+    const authStage = document.getElementById('authStage');
+    if (authStage) authStage.style.display = 'none';
     document.getElementById('appStage').style.display = 'flex';
     document.getElementById('sidebarUserTitle').innerText = role === 'admin' ? 'SAISOKU Admin' : 'Member Key Access';
     document.getElementById('sidebarUserRole').innerText = `Role: ${role}`;

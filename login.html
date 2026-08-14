@@ -116,7 +116,7 @@
       if (key === 'AGUNG69') {
         localStorage.setItem('prospera_role', 'user');
         localStorage.setItem('prospera_session', 'active_' + Date.now());
-        window.location.href = 'index.html';
+        window.location.replace('./index.html');
       } else {
         showAlert('Access Key Salah! Kode akses: AGUNG69');
       }
@@ -129,7 +129,7 @@
       if (user === 'prospera@gmail.com' && pass === 'prospera123') {
         localStorage.setItem('prospera_role', 'admin');
         localStorage.setItem('prospera_session', 'active_' + Date.now());
-        window.location.href = 'index.html';
+        window.location.replace('./index.html');
       } else {
         showAlert('Kredensial Admin Salah!');
       }
