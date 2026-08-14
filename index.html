@@ -455,8 +455,8 @@
       </div>
 
       <div class="insight-card">
-        <h3 style="font-size:10.5px;font-weight:800;margin-bottom:6px;">DAFTAR KATEGORI SYSTEM</h3>
-        <div id="catList" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
+        <h3 style="font-size:10.5px;font-weight:800;margin-bottom:8px;">DAFTAR KATEGORI SYSTEM</h3>
+        <div id="catList" style="display:flex;flex-direction:column;gap:6px;"></div>
       </div>
     </div>
   </main>
@@ -1140,17 +1140,76 @@
     document.getElementById('detailModal').style.display = 'none';
   }
 
+  let categories = JSON.parse(localStorage.getItem('PROSPERA_CATEGORIES')) || [
+    'Biaya Bank / BIFAST',
+    'Purchase Order (PO)',
+    'PaDi UMKM / Inbound',
+    'Simpanan / Tabungan',
+    'Inventaris / Belanja Laptop',
+    'Titip Bayar',
+    'Lain-lain / Operational'
+  ];
+
+  function saveCategories() {
+    localStorage.setItem('PROSPERA_CATEGORIES', JSON.stringify(categories));
+  }
+
   function handleAddCategory() {
-    const val = document.getElementById('newCatInput').value.trim();
-    if (val && !categories.includes(val)) {
-      categories.push(val);
-      document.getElementById('newCatInput').value = '';
+    const input = document.getElementById('newCatInput');
+    const val = input.value.trim();
+    if (!val) return;
+    if (categories.includes(val)) {
+      alert('Kategori ini sudah ada!');
+      return;
+    }
+    categories.push(val);
+    saveCategories();
+    input.value = '';
+    renderCategories();
+  }
+
+  function editCategory(index) {
+    const oldName = categories[index];
+    const newName = prompt('Edit nama kategori:', oldName);
+    if (newName && newName.trim() !== '' && newName.trim() !== oldName) {
+      const trimmed = newName.trim();
+      if (categories.includes(trimmed)) {
+        alert('Kategori dengan nama ini sudah ada!');
+        return;
+      }
+      categories[index] = trimmed;
+      saveCategories();
+      renderCategories();
+    }
+  }
+
+  function deleteCategory(index) {
+    const catName = categories[index];
+    if (confirm(`Hapus kategori "${catName}"?`)) {
+      categories.splice(index, 1);
+      saveCategories();
       renderCategories();
     }
   }
 
   function renderCategories() {
-    document.getElementById('catList').innerHTML = categories.map(c => `<span class="insight-badge badge-blue" style="font-size:10px;padding:4px 8px;margin:2px;">🏷️ ${c}</span>`).join('');
+    const listEl = document.getElementById('catList');
+    if (!listEl) return;
+
+    if (categories.length === 0) {
+      listEl.innerHTML = '<div style="font-size:11px;color:#64748b;padding:8px;">Belum ada kategori diset.</div>';
+      return;
+    }
+
+    listEl.innerHTML = categories.map((c, idx) => `
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--panel-white);border:2px solid var(--border);box-shadow:2px 2px 0 var(--insight-shadow);width:100%;max-width:340px;margin-bottom:6px;">
+        <span style="font-size:11px;font-weight:800;color:var(--ink-900);">🏷️ ${c}</span>
+        <div style="display:flex;gap:4px;">
+          <button onclick="editCategory(${idx})" class="insight-button insight-button--primary" style="font-size:9px;padding:3px 6px;width:auto;display:inline-flex;">✏️ EDIT</button>
+          <button onclick="deleteCategory(${idx})" class="insight-button insight-button--danger" style="font-size:9px;padding:3px 6px;width:auto;display:inline-flex;">🗑️ HAPUS</button>
+        </div>
+      </div>
+    `).join('');
   }
 </script>
 </body>
