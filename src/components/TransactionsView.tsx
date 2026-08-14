@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Transaction, autoCategorize, parseNumber } from "@/lib/transactions";
+import { Transaction, autoCategorize, parseCurrency } from "@/lib/transactions";
 import { uploadCSVToStorage, clearTransactions } from "@/lib/db";
 import { UploadCloud, Search, Filter, CheckCircle2, Trash2, Database, Eye, X } from "lucide-react";
 import Papa from "papaparse";
@@ -37,27 +37,35 @@ export const TransactionsView: React.FC<TransactionsViewProps> = ({
       header: true,
       skipEmptyLines: true,
       complete: (results) => {
-        const parsed: Transaction[] = results.data.map((row: any, idx: number) => {
-          const debit = parseNumber(row["Debit"] || row["debit"]);
-          const credit = parseNumber(row["Credit"] || row["credit"]);
-          const desc = row["Description"] || row["description"] || "Transaksi CSV";
-          return {
+        const parsed: Transaction[] = [];
+
+        results.data.forEach((row: any, idx: number) => {
+          const debit = parseCurrency(row["Debit"] || row["debit"]);
+          const credit = parseCurrency(row["Credit"] || row["credit"]);
+          const desc = row["Description"] || row["description"];
+          const journalNo = row["Journal No."] || row["journal_no"];
+
+          if (!desc && !journalNo && debit === 0 && credit === 0) return;
+
+          parsed.push({
             id: `tx-${Date.now()}-${idx}`,
-            postDate: row["Post Date"] || row["post_date"] || new Date().toLocaleString("id-ID"),
+            postDate: row["Post Date"] || row["post_date"] || "-",
             valueDate: row["Value Date"] || row["value_date"] || "-",
             branch: row["Branch"] || row["branch"] || "0989",
-            journalNo: row["Journal No."] || row["journal_no"] || `J-${idx + 1000}`,
-            description: desc,
+            journalNo: journalNo || `J-${idx + 1000}`,
+            description: desc || "Transaksi CSV",
             debit,
             credit,
             category: autoCategorize(desc),
-          };
+          });
         });
 
         if (parsed.length > 0) {
-          uploadCSVToStorage(file, parsed).then((savedData) => {
+          // Gabungkan data baru dengan data yang sudah ada sebelumnya
+          const combined = [...transactions, ...parsed];
+          uploadCSVToStorage(file, combined).then((savedData) => {
             setTransactions(savedData);
-            setUploadSuccessMessage(`Berhasil mengunggah file "${file.name}" ke Supabase Cloud (${parsed.length} baris parsed)!`);
+            setUploadSuccessMessage(`Berhasil menambahkan ${parsed.length} baris data dari file "${file.name}"! Total data: ${savedData.length}`);
             setTimeout(() => setUploadSuccessMessage(null), 5000);
           });
         }
