@@ -37,16 +37,24 @@ html.dark {
 *, *::before, *::after { box-sizing: border-box; }
 
 body {
-  font-family: 'Geist Mono', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 14px;
   line-height: 1.6;
   color: var(--insight-text);
   background:
-    linear-gradient(var(--insight-grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--insight-grid) 1px, transparent 1px),
+    linear-gradient(var(--insight-grid) 1.5px, transparent 1.5px),
+    linear-gradient(90deg, var(--insight-grid) 1.5px, transparent 1.5px),
     var(--insight-bg);
-  background-size: 24px 24px, 24px 24px, auto;
+  background-size: 20px 20px, 20px 20px, auto;
   min-height: 100vh;
+}
+
+.app-grid-bg {
+  background-color: var(--insight-bg);
+  background-image:
+    linear-gradient(var(--insight-grid) 1.5px, transparent 1.5px),
+    linear-gradient(90deg, var(--insight-grid) 1.5px, transparent 1.5px);
+  background-size: 20px 20px;
 }
 
 /* Google 4-color top bar */

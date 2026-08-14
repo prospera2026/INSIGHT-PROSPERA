@@ -56,7 +56,7 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-[var(--insight-bg)] text-[var(--insight-text)]">
+    <div className="min-h-screen flex flex-col md:flex-row app-grid-bg text-[var(--insight-text)]">
       {/* Top Bar Google 4-Color Accent */}
       <div className="google-top-bar" />
 
@@ -104,8 +104,8 @@ export default function DashboardLayout({
         />
       </div>
 
-      {/* Main Content Page View */}
-      <main className="flex-1 p-3.5 sm:p-6 md:p-8 pt-4 md:pt-8 overflow-y-auto max-h-screen">
+      {/* Main Content Page View (With Explicit Engineering Grid Background) */}
+      <main className="flex-1 p-3.5 sm:p-6 md:p-8 pt-4 md:pt-8 overflow-y-auto max-h-screen app-grid-bg">
         {children}
       </main>
     </div>
