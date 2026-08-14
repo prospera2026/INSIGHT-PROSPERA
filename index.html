@@ -459,6 +459,8 @@
   }
 
   function enterApp(role = 'user') {
+    localStorage.setItem('prospera_role', role);
+    localStorage.setItem('prospera_session', 'active_' + Date.now());
     document.getElementById('authStage').style.display = 'none';
     document.getElementById('appStage').style.display = 'flex';
     document.getElementById('sidebarUserTitle').innerText = role === 'admin' ? 'SAISOKU Admin' : 'Member Key Access';
@@ -468,9 +470,20 @@
   }
 
   function handleLogout() {
+    localStorage.removeItem('prospera_role');
+    localStorage.removeItem('prospera_session');
     document.getElementById('appStage').style.display = 'none';
     document.getElementById('authStage').style.display = 'flex';
   }
+
+  // Check Persistent Session on Page Reload
+  document.addEventListener("DOMContentLoaded", function() {
+    const savedRole = localStorage.getItem('prospera_role');
+    const savedSession = localStorage.getItem('prospera_session');
+    if (savedRole && savedSession) {
+      enterApp(savedRole);
+    }
+  });
 
   function switchAppTab(tab) {
     document.getElementById('viewDashboard').classList.toggle('tab-inactive', tab !== 'dashboard');
