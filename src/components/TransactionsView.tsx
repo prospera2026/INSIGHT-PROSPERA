@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { Transaction, autoCategorize, parseNumber } from "@/lib/transactions";
 import { uploadCSVToStorage, clearTransactions } from "@/lib/db";
-import { UploadCloud, Search, Filter, CheckCircle2, FileUp, Trash2, Database, Eye, X } from "lucide-react";
+import { UploadCloud, Search, Filter, CheckCircle2, Trash2, Database, Eye, X } from "lucide-react";
 import Papa from "papaparse";
 
 interface TransactionsViewProps {
@@ -22,11 +22,13 @@ export const TransactionsView: React.FC<TransactionsViewProps> = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("ALL");
   const [uploadSuccessMessage, setUploadSuccessMessage] = useState<string | null>(null);
-
-  // State untuk Pop-up Detail Transaksi (View Data)
   const [selectedTxDetail, setSelectedTxDetail] = useState<Transaction | null>(null);
 
-  // CSV File Upload Handler dengan LocalStorage Database Persistence
+  // Pagination state (Max 6 rows per page)
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 6;
+
+  // CSV File Upload Handler
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -53,10 +55,9 @@ export const TransactionsView: React.FC<TransactionsViewProps> = ({
         });
 
         if (parsed.length > 0) {
-          // Upload berkas CSV ke Supabase Storage Bucket (Hemat Quota DB)
           uploadCSVToStorage(file, parsed).then((savedData) => {
             setTransactions(savedData);
-            setUploadSuccessMessage(`Berhasil mengunggah file "${file.name}" ke Supabase Storage Cloud (${parsed.length} baris parsed)!`);
+            setUploadSuccessMessage(`Berhasil mengunggah file "${file.name}" ke Supabase Cloud (${parsed.length} baris parsed)!`);
             setTimeout(() => setUploadSuccessMessage(null), 5000);
           });
         }
@@ -64,15 +65,13 @@ export const TransactionsView: React.FC<TransactionsViewProps> = ({
     });
   };
 
-  // Reset Database
   const handleClearDatabase = async () => {
-    if (confirm("Apakah Anda yakin ingin mengosongkan seluruh data transaksi dari Database Supabase & Local Storage?")) {
+    if (confirm("Apakah Anda yakin ingin mengosongkan seluruh data transaksi dari Database Supabase Cloud?")) {
       await clearTransactions();
       setTransactions([]);
     }
   };
 
-  // Filtering Logic
   const allCategories = Array.from(new Set([...transactions.map((t) => t.category), ...customCategories]));
 
   const filteredTransactions = transactions.filter((t) => {
@@ -86,7 +85,14 @@ export const TransactionsView: React.FC<TransactionsViewProps> = ({
     return matchesSearch && matchesCategory;
   });
 
-  // Calculate filtered Rekap metrics
+  // Pagination calculation
+  const totalItems = filteredTransactions.length;
+  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE) || 1;
+  const safeCurrentPage = Math.min(Math.max(currentPage, 1), totalPages);
+  const startIndex = (safeCurrentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, totalItems);
+  const paginatedTransactions = filteredTransactions.slice(startIndex, endIndex);
+
   const totalFilteredDebit = filteredTransactions.reduce((acc, t) => acc + t.debit, 0);
   const totalFilteredCredit = filteredTransactions.reduce((acc, t) => acc + t.credit, 0);
   const netFilteredBalance = totalFilteredCredit - totalFilteredDebit;
@@ -100,19 +106,19 @@ export const TransactionsView: React.FC<TransactionsViewProps> = ({
   };
 
   return (
-    <div className="space-y-6">
-      {/* SECTION 1: TOP UPLOADER & REKAP BAR */}
+    <div className="space-y-4">
+      {/* HEADER BANNER */}
       <div className="insight-card p-3 bg-slate-900 text-white border-2 border-black">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2 pb-2 border-b border-slate-700">
           <div>
             <div className="flex items-center gap-2 mb-0.5">
               <span className="inline-block px-1.5 py-0.2 bg-[var(--google-green)] text-white text-[8.5px] font-extrabold tracking-wider uppercase border border-black">
-                DATABASE LOKAL TERSIMPAN
+                SUPABASE DATABASE CLOUD
               </span>
             </div>
             <h1 className="text-sm font-black tracking-tight leading-tight">DATABASE TRANSAKSI & UPLOAD CSV</h1>
             <p className="text-[10px] text-blue-300 font-bold">
-              Data tersimpan otomatis di LocalStorage browser sebelum dikoneksikan ke Supabase.
+              Tersimpan permanen di Supabase Cloud Database & Storage.
             </p>
           </div>
 
@@ -121,13 +127,11 @@ export const TransactionsView: React.FC<TransactionsViewProps> = ({
               <button
                 onClick={handleClearDatabase}
                 className="insight-button insight-button--danger text-[10px] py-1 px-2.5 flex items-center gap-1"
-                title="Hapus Database Lokal"
               >
                 <Trash2 className="w-3 h-3" /> RESET DB
               </button>
             )}
 
-            {/* Upload Button */}
             <label className="insight-button insight-button--primary cursor-pointer text-[10px] py-1 px-2.5 flex items-center gap-1.5 whitespace-nowrap">
               <UploadCloud className="w-3.5 h-3.5" /> UPLOAD BENCHMARK CSV
               <input type="file" accept=".csv" onChange={handleFileUpload} className="hidden" />
@@ -136,7 +140,7 @@ export const TransactionsView: React.FC<TransactionsViewProps> = ({
         </div>
 
         {uploadSuccessMessage && (
-          <div className="p-3 bg-green-950 border-2 border-green-500 text-green-200 text-xs font-bold flex items-center justify-between mb-4">
+          <div className="p-2.5 bg-green-950 border-2 border-green-500 text-green-200 text-xs font-bold flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-green-400" />
               <span>{uploadSuccessMessage}</span>
@@ -150,71 +154,75 @@ export const TransactionsView: React.FC<TransactionsViewProps> = ({
           </div>
         )}
 
-        {/* Quick Rekap Summary Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 mt-2">
-          <div className="p-2.5 bg-slate-800 border-2 border-black">
-            <div className="text-[9px] font-extrabold text-slate-400 uppercase">TOTAL TRANSAKSI DB</div>
-            <div className="text-sm font-black text-white">{filteredTransactions.length} Items</div>
+        {/* Quick Rekap Summary */}
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 mt-1">
+          <div className="p-2 bg-slate-800 border border-black">
+            <div className="text-[8.5px] font-extrabold text-slate-400 uppercase">TOTAL TRANSAKSI</div>
+            <div className="text-xs font-black text-white">{filteredTransactions.length} Items</div>
           </div>
 
-          <div className="p-2.5 bg-slate-800 border-2 border-black">
-            <div className="text-[9px] font-extrabold text-red-400 uppercase">REKAP DEBIT (PENGELUARAN)</div>
-            <div className="text-sm font-black text-red-400">{formatIDR(totalFilteredDebit)}</div>
+          <div className="p-2 bg-slate-800 border border-black">
+            <div className="text-[8.5px] font-extrabold text-red-400 uppercase">REKAP DEBIT</div>
+            <div className="text-xs font-black text-red-400">{formatIDR(totalFilteredDebit)}</div>
           </div>
 
-          <div className="p-2.5 bg-slate-800 border-2 border-black">
-            <div className="text-[9px] font-extrabold text-green-400 uppercase">REKAP KREDIT (PEMASUKAN)</div>
-            <div className="text-sm font-black text-green-400">{formatIDR(totalFilteredCredit)}</div>
+          <div className="p-2 bg-slate-800 border border-black">
+            <div className="text-[8.5px] font-extrabold text-green-400 uppercase">REKAP KREDIT</div>
+            <div className="text-xs font-black text-green-400">{formatIDR(totalFilteredCredit)}</div>
           </div>
 
-          <div className="p-2.5 bg-slate-800 border-2 border-black">
-            <div className="text-[9px] font-extrabold text-blue-400 uppercase">NET ARUS TERFILTER</div>
-            <div className="text-sm font-black text-blue-400">{formatIDR(netFilteredBalance)}</div>
+          <div className="p-2 bg-slate-800 border border-black">
+            <div className="text-[8.5px] font-extrabold text-blue-400 uppercase">NET ARUS</div>
+            <div className="text-xs font-black text-blue-400">{formatIDR(netFilteredBalance)}</div>
           </div>
         </div>
       </div>
 
-      {/* DRAG AND DROP EMPTY STATE IF NO DATA */}
+      {/* EMPTY STATE */}
       {transactions.length === 0 && (
-        <div className="insight-card p-12 text-center border-4 border-dashed border-[var(--google-blue)] bg-slate-50 dark:bg-slate-900/50">
-          <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900 border-3 border-black mx-auto flex items-center justify-center mb-4 shadow-[4px_4px_0_#000]">
-            <Database className="w-8 h-8 text-[var(--google-blue)]" />
+        <div className="insight-card p-8 text-center border-4 border-dashed border-[var(--google-blue)] bg-slate-50 dark:bg-slate-900/50">
+          <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 border-2 border-black mx-auto flex items-center justify-center mb-3 shadow-[2px_2px_0_#000]">
+            <Database className="w-6 h-6 text-[var(--google-blue)]" />
           </div>
-          <h2 className="text-lg font-black uppercase mb-1">DATABASE LOKAL KOSONG</h2>
-          <p className="text-xs text-slate-500 font-semibold max-w-md mx-auto mb-6">
-            Unggah file mutasi `.csv` bank Anda. Data yang diunggah akan otomatis tersimpan permanen di Database Browser lokal Anda.
+          <h2 className="text-sm font-black uppercase mb-1">DATABASE SUPABASE KOSONG</h2>
+          <p className="text-xs text-slate-500 font-semibold max-w-md mx-auto mb-4">
+            Unggah file mutasi `.csv` bank Anda. Data akan tersimpan secara otomatis di Supabase Cloud.
           </p>
           <label className="insight-button insight-button--primary cursor-pointer text-xs">
-            <UploadCloud className="w-4 h-4" /> UPLOAD TRANSC
+            <UploadCloud className="w-4 h-4" /> UPLOAD CSV
             <input type="file" accept=".csv" onChange={handleFileUpload} className="hidden" />
           </label>
         </div>
       )}
 
-      {/* SECTION 2: SEARCH & FILTER ACTION BAR */}
       {transactions.length > 0 && (
         <>
-          <div className="insight-card p-3 flex flex-col md:flex-row justify-between items-center gap-3">
-            {/* Live Search Input */}
-            <div className="relative w-full md:w-80">
-              <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+          {/* SEARCH & FILTER BAR */}
+          <div className="insight-card p-2 flex flex-col md:flex-row justify-between items-center gap-2">
+            <div className="relative w-full md:w-72">
+              <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400" />
               <input
                 type="text"
                 placeholder="Cari deskripsi, No Jurnal..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="insight-input pl-9 w-full py-1.5 text-xs"
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="insight-input pl-8 w-full py-1 text-xs"
               />
             </div>
 
             <div className="flex items-center gap-2 w-full md:w-auto">
-              {/* Filter Category Dropdown */}
               <div className="flex items-center gap-1.5">
                 <Filter className="w-3.5 h-3.5 text-[var(--google-blue)]" />
                 <select
                   value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="insight-input font-bold text-xs uppercase py-1.5"
+                  onChange={(e) => {
+                    setSelectedCategory(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="insight-input font-bold text-xs uppercase py-1"
                 >
                   <option value="ALL">SEMUA KATEGORI ({transactions.length})</option>
                   {allCategories.map((cat) => (
@@ -227,70 +235,57 @@ export const TransactionsView: React.FC<TransactionsViewProps> = ({
             </div>
           </div>
 
-          {/* SECTION 3: TRANSACTIONS DATA TABLE */}
-          <div className="insight-card p-0 overflow-hidden">
+          {/* TABLE AREA */}
+          <div className="insight-card p-0 overflow-hidden mb-2">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="bg-slate-900 text-white border-b-3 border-black uppercase text-[10.5px] font-extrabold tracking-wider">
-                    <th className="p-3 border-r border-slate-700">Tanggal Post</th>
-                    <th className="p-3 border-r border-slate-700">No. Jurnal</th>
-                    <th className="p-3 border-r border-slate-700">Kategori Tag</th>
-                    <th className="p-3 border-r border-slate-700">Deskripsi Transaksi</th>
-                    <th className="p-3 border-r border-slate-700 text-right">Debit (Pengeluaran)</th>
-                    <th className="p-3 border-r border-slate-700 text-right">Credit (Pemasukan)</th>
-                    <th className="p-3 text-center">Aksi Detail</th>
+                  <tr className="bg-slate-900 text-white border-b-2 border-black uppercase text-[10px] font-extrabold">
+                    <th className="p-2 border-r border-slate-700">Tanggal Post</th>
+                    <th className="p-2 border-r border-slate-700">No. Jurnal</th>
+                    <th className="p-2 border-r border-slate-700">Kategori</th>
+                    <th className="p-2 border-r border-slate-700">Deskripsi</th>
+                    <th className="p-2 border-r border-slate-700 text-right">Debit</th>
+                    <th className="p-2 border-r border-slate-700 text-right">Credit</th>
+                    <th className="p-2 text-center">Aksi</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y-2 divide-[var(--insight-border)] font-mono">
-                  {filteredTransactions.length === 0 ? (
+                <tbody className="divide-y divide-[var(--insight-border)] font-mono text-[11px]">
+                  {paginatedTransactions.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="p-8 text-center text-slate-500 font-bold">
-                        Tidak ada data transaksi yang sesuai dengan filter pencarian.
+                      <td colSpan={7} className="p-6 text-center text-slate-500 font-bold">
+                        Tidak ada data transaksi yang sesuai filter.
                       </td>
                     </tr>
                   ) : (
-                    filteredTransactions.map((t) => (
-                      <tr
-                        key={t.id}
-                        className="hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                      >
-                        <td className="p-2.5 font-semibold text-slate-600 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700">
+                    paginatedTransactions.map((t) => (
+                      <tr key={t.id} className="hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                        <td className="p-2 font-semibold text-slate-600 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700">
                           {t.postDate}
                         </td>
-                        <td className="p-2.5 font-extrabold border-r border-slate-200 dark:border-slate-700">
+                        <td className="p-2 font-extrabold border-r border-slate-200 dark:border-slate-700">
                           {t.journalNo}
                         </td>
-                        <td className="p-2.5 border-r border-slate-200 dark:border-slate-700">
-                          <span
-                            className={`insight-badge ${
-                              t.category.includes("BIFAST")
-                                ? "insight-badge--yellow"
-                                : t.category.includes("PO")
-                                ? "insight-badge--blue"
-                                : t.category.includes("PaDi")
-                                ? "insight-badge--green"
-                                : "insight-badge--red"
-                            }`}
-                          >
+                        <td className="p-2 border-r border-slate-200 dark:border-slate-700">
+                          <span className="insight-badge badge-blue text-[9px] py-0.5 px-1.5">
                             {t.category}
                           </span>
                         </td>
-                        <td className="p-2.5 border-r border-slate-200 dark:border-slate-700 font-sans text-xs max-w-xs truncate font-medium">
+                        <td className="p-2 border-r border-slate-200 dark:border-slate-700 font-sans max-w-xs truncate font-medium">
                           {t.description}
                         </td>
-                        <td className="p-2.5 text-right font-extrabold text-red-600 border-r border-slate-200 dark:border-slate-700">
+                        <td className="p-2 text-right font-extrabold text-red-600 border-r border-slate-200 dark:border-slate-700">
                           {t.debit > 0 ? formatIDR(t.debit) : "-"}
                         </td>
-                        <td className="p-2.5 text-right font-extrabold text-green-600 border-r border-slate-200 dark:border-slate-700">
+                        <td className="p-2 text-right font-extrabold text-green-600 border-r border-slate-200 dark:border-slate-700">
                           {t.credit > 0 ? formatIDR(t.credit) : "-"}
                         </td>
-                        <td className="p-2.5 text-center">
+                        <td className="p-2 text-center">
                           <button
                             onClick={() => setSelectedTxDetail(t)}
-                            className="px-2 py-1 bg-[var(--google-blue)] text-white text-[10px] font-extrabold border border-black shadow-[1.5px_1.5px_0_#000] hover:bg-blue-600 flex items-center gap-1 mx-auto uppercase"
+                            className="px-2 py-0.5 bg-[var(--google-blue)] text-white text-[9px] font-extrabold border border-black shadow-[1px_1px_0_#000] hover:bg-blue-600 flex items-center gap-1 mx-auto uppercase"
                           >
-                            <Eye className="w-3 h-3" /> VIEW DATA
+                            <Eye className="w-3 h-3" /> VIEW
                           </button>
                         </td>
                       </tr>
@@ -299,92 +294,94 @@ export const TransactionsView: React.FC<TransactionsViewProps> = ({
                 </tbody>
               </table>
             </div>
+          </div>
 
-            {/* Table Footer summary */}
-            <div className="p-3 bg-slate-100 dark:bg-slate-800 border-t-3 border-[var(--insight-border)] flex justify-between items-center text-xs font-bold">
-              <span>Menampilkan {filteredTransactions.length} dari {transactions.length} baris data</span>
-              <span className="font-mono text-[var(--google-blue)]">Indexed Storage: LocalStorage</span>
+          {/* PAGINATION CONTROLS (MAX 6 DATA PER HALAMAN) */}
+          <div className="insight-card p-2 flex flex-wrap items-center justify-between gap-2">
+            <div className="text-[10.5px] font-extrabold text-slate-600 dark:text-slate-300">
+              Menampilkan{" "}
+              <span className="text-[var(--google-blue)]">
+                {totalItems > 0 ? `${startIndex + 1} - ${endIndex}` : "0 - 0"}
+              </span>{" "}
+              dari {totalItems} transaksi (Max 6/hal)
+            </div>
+            <div className="flex items-center gap-1.5">
+              <button
+                disabled={safeCurrentPage === 1}
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                className="insight-button text-[10px] py-1 px-2.5 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                ← SEBELUMNYA
+              </button>
+              <span className="insight-badge badge-blue text-[10px] py-1 px-2">
+                Hal {safeCurrentPage} / {totalPages}
+              </span>
+              <button
+                disabled={safeCurrentPage === totalPages || totalPages === 0}
+                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                className="insight-button text-[10px] py-1 px-2.5 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                SELANJUTNYA →
+              </button>
             </div>
           </div>
         </>
       )}
 
-      {/* POP-UP DETAIL TRANSAKSI (VIEW DATA) */}
+      {/* POP-UP DETAIL TRANSAKSI */}
       {selectedTxDetail && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="insight-card w-full max-w-lg bg-white dark:bg-slate-900 border-4 border-black shadow-[8px_8px_0_#000] overflow-hidden insight-page-fade">
-            {/* Header Modal */}
-            <div className="bg-slate-900 text-white p-4 border-b-4 border-black flex justify-between items-center">
+          <div className="insight-card w-full max-w-lg bg-white dark:bg-slate-900 border-3 border-black shadow-[6px_6px_0_#000] overflow-hidden">
+            <div className="bg-slate-900 text-white p-3 border-b-3 border-black flex justify-between items-center">
               <div className="flex items-center gap-2">
-                <Eye className="w-5 h-5 text-[var(--google-blue)]" />
-                <h3 className="font-black text-sm uppercase tracking-wide">
+                <Eye className="w-4 h-4 text-[var(--google-blue)]" />
+                <h3 className="font-black text-xs uppercase tracking-wide">
                   DETAIL DATA TRANSAKSI
                 </h3>
               </div>
-              <button
-                onClick={() => setSelectedTxDetail(null)}
-                className="p-1 hover:bg-slate-800 border border-white/20 text-white"
-              >
+              <button onClick={() => setSelectedTxDetail(null)} className="p-1 hover:bg-slate-800 text-white">
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            {/* Body Modal */}
-            <div className="p-6 space-y-4 font-mono text-xs">
-              <div className="grid grid-cols-2 gap-4 pb-3 border-b-2 border-slate-200 dark:border-slate-800">
+            <div className="p-4 space-y-3 font-mono text-xs">
+              <div className="grid grid-cols-2 gap-3 pb-2 border-b border-slate-200 dark:border-slate-800">
                 <div>
-                  <div className="text-[10px] font-bold text-slate-400 uppercase">NO. JURNAL</div>
-                  <div className="text-sm font-black">{selectedTxDetail.journalNo}</div>
+                  <div className="text-[9px] font-bold text-slate-400 uppercase">NO. JURNAL</div>
+                  <div className="text-xs font-black">{selectedTxDetail.journalNo}</div>
                 </div>
                 <div>
-                  <div className="text-[10px] font-bold text-slate-400 uppercase">TANGGAL POST</div>
+                  <div className="text-[9px] font-bold text-slate-400 uppercase">TANGGAL POST</div>
                   <div className="text-xs font-bold text-slate-700 dark:text-slate-300">{selectedTxDetail.postDate}</div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 pb-3 border-b-2 border-slate-200 dark:border-slate-800">
-                <div>
-                  <div className="text-[10px] font-bold text-slate-400 uppercase">BRANCH / CABANG</div>
-                  <div className="text-xs font-bold">{selectedTxDetail.branch}</div>
-                </div>
-                <div>
-                  <div className="text-[10px] font-bold text-slate-400 uppercase">KATEGORI TRANSAKSI</div>
-                  <span className="insight-badge insight-badge--blue mt-1">
-                    {selectedTxDetail.category}
-                  </span>
-                </div>
-              </div>
-
               <div>
-                <div className="text-[10px] font-bold text-slate-400 uppercase mb-1">DESKRIPSI LENGKAP MUTASI</div>
-                <div className="p-3 bg-slate-100 dark:bg-slate-800 border-2 border-black font-sans text-xs font-semibold leading-relaxed">
+                <div className="text-[9px] font-bold text-slate-400 uppercase mb-1">DESKRIPSI LENGKAP MUTASI</div>
+                <div className="p-2.5 bg-slate-100 dark:bg-slate-800 border border-black font-sans text-xs font-semibold leading-relaxed">
                   {selectedTxDetail.description}
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 pt-2">
-                <div className="p-3 bg-red-50 dark:bg-red-950/40 border-2 border-red-500">
-                  <div className="text-[9px] font-extrabold text-red-500 uppercase">NOMINAL DEBIT (KELUAR)</div>
-                  <div className="text-base font-black text-red-600">
+              <div className="grid grid-cols-2 gap-3 pt-1">
+                <div className="p-2 bg-red-50 dark:bg-red-950/40 border border-red-500">
+                  <div className="text-[8.5px] font-extrabold text-red-500 uppercase">DEBIT (KELUAR)</div>
+                  <div className="text-sm font-black text-red-600">
                     {selectedTxDetail.debit > 0 ? formatIDR(selectedTxDetail.debit) : "Rp 0"}
                   </div>
                 </div>
 
-                <div className="p-3 bg-green-50 dark:bg-green-950/40 border-2 border-green-500">
-                  <div className="text-[9px] font-extrabold text-green-500 uppercase">NOMINAL KREDIT (MASUK)</div>
-                  <div className="text-base font-black text-green-600">
+                <div className="p-2 bg-green-50 dark:bg-green-950/40 border border-green-500">
+                  <div className="text-[8.5px] font-extrabold text-green-500 uppercase">KREDIT (MASUK)</div>
+                  <div className="text-sm font-black text-green-600">
                     {selectedTxDetail.credit > 0 ? formatIDR(selectedTxDetail.credit) : "Rp 0"}
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Footer Modal */}
-            <div className="p-3 bg-slate-100 dark:bg-slate-800 border-t-4 border-black flex justify-end">
-              <button
-                onClick={() => setSelectedTxDetail(null)}
-                className="insight-button insight-button--primary text-xs"
-              >
+            <div className="p-2.5 bg-slate-100 dark:bg-slate-800 border-t-3 border-black flex justify-end">
+              <button onClick={() => setSelectedTxDetail(null)} className="insight-button insight-button--primary text-xs">
                 TUTUP DETAIL
               </button>
             </div>
