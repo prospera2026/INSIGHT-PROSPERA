@@ -1,11 +1,11 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { LayoutDashboard, FileSpreadsheet, ShieldCheck, Moon, Sun, Database, LogOut, Tag, X } from "lucide-react";
 
 interface SidebarProps {
-  activeTab: "dashboard" | "transactions" | "categories";
-  setActiveTab: (tab: "dashboard" | "transactions" | "categories") => void;
+  currentPath: string;
   darkMode: boolean;
   setDarkMode: (val: boolean) => void;
   userRole: "admin" | "user";
@@ -14,14 +14,17 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
-  activeTab,
-  setActiveTab,
+  currentPath,
   darkMode,
   setDarkMode,
   userRole,
   onLogout,
   onCloseMobile,
 }) => {
+  const isDashboardActive = currentPath === "/dashboard";
+  const isTransactionsActive = currentPath.startsWith("/dashboard/transactions");
+  const isCategoriesActive = currentPath.startsWith("/dashboard/categories");
+
   return (
     <aside className="w-56 bg-[var(--insight-card)] border-r-4 border-[var(--insight-border)] flex flex-col justify-between p-3.5 min-h-screen">
       <div>
@@ -53,46 +56,49 @@ export const Sidebar: React.FC<SidebarProps> = ({
           )}
         </div>
 
-        {/* Navigation Menu */}
+        {/* Navigation Menu (Next.js Link Routing) */}
         <nav className="space-y-2">
           {/* Menu 1: Dashboard Utama */}
-          <button
-            onClick={() => setActiveTab("dashboard")}
+          <Link
+            href="/dashboard"
+            onClick={onCloseMobile}
             className={`w-full flex items-center gap-2.5 px-3 py-2 font-black text-[11px] uppercase tracking-wider border-2 border-[var(--insight-border)] transition-all ${
-              activeTab === "dashboard"
+              isDashboardActive
                 ? "bg-[var(--google-blue)] text-white shadow-[3px_3px_0_#0f172a] -translate-y-0.5"
                 : "bg-[var(--insight-panel)] text-[var(--insight-text)] hover:bg-slate-100 dark:hover:bg-slate-800 shadow-[2px_2px_0_var(--insight-shadow)]"
             }`}
           >
             <LayoutDashboard className="w-3.5 h-3.5" />
             <span>Dashboard Utama</span>
-          </button>
+          </Link>
 
           {/* Menu 2: Upload Transc */}
-          <button
-            onClick={() => setActiveTab("transactions")}
+          <Link
+            href="/dashboard/transactions"
+            onClick={onCloseMobile}
             className={`w-full flex items-center gap-2.5 px-3 py-2 font-black text-[11px] uppercase tracking-wider border-2 border-[var(--insight-border)] transition-all ${
-              activeTab === "transactions"
+              isTransactionsActive
                 ? "bg-[var(--google-blue)] text-white shadow-[3px_3px_0_#0f172a] -translate-y-0.5"
                 : "bg-[var(--insight-panel)] text-[var(--insight-text)] hover:bg-slate-100 dark:hover:bg-slate-800 shadow-[2px_2px_0_var(--insight-shadow)]"
             }`}
           >
             <FileSpreadsheet className="w-3.5 h-3.5" />
             <span>UPLOAD TRANSC</span>
-          </button>
+          </Link>
 
           {/* Menu 3: Kategori Transaksi */}
-          <button
-            onClick={() => setActiveTab("categories")}
+          <Link
+            href="/dashboard/categories"
+            onClick={onCloseMobile}
             className={`w-full flex items-center gap-2.5 px-3 py-2 font-black text-[11px] uppercase tracking-wider border-2 border-[var(--insight-border)] transition-all ${
-              activeTab === "categories"
+              isCategoriesActive
                 ? "bg-[var(--google-blue)] text-white shadow-[3px_3px_0_#0f172a] -translate-y-0.5"
                 : "bg-[var(--insight-panel)] text-[var(--insight-text)] hover:bg-slate-100 dark:hover:bg-slate-800 shadow-[2px_2px_0_var(--insight-shadow)]"
             }`}
           >
             <Tag className="w-3.5 h-3.5" />
             <span>Kategori Transaksi</span>
-          </button>
+          </Link>
         </nav>
       </div>
 
