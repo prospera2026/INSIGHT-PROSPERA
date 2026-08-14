@@ -615,7 +615,8 @@
     localStorage.removeItem('prospera_role');
     localStorage.removeItem('prospera_session');
     localStorage.removeItem('prospera_active_tab');
-    window.location.href = 'login.html';
+    document.getElementById('appStage').style.display = 'none';
+    document.getElementById('authStage').style.display = 'flex';
   }
 
   // 🟢 DARK / LIGHT MODE TOGGLE LOGIC
@@ -647,10 +648,11 @@
 
     const savedRole = localStorage.getItem('prospera_role');
     const savedSession = localStorage.getItem('prospera_session');
-    if (!savedRole || !savedSession) {
-      window.location.href = 'login.html';
-    } else {
+    if (savedRole && savedSession) {
       enterApp(savedRole);
+    } else {
+      document.getElementById('authStage').style.display = 'flex';
+      document.getElementById('appStage').style.display = 'none';
     }
   });
 
