@@ -601,14 +601,13 @@
     // Check saved tab or default to dashboard
     const savedTab = localStorage.getItem('prospera_active_tab') || 'dashboard';
     
-    // Initialize Dashboard Filters
+    // Initialize Dashboard Filters & Local Data immediately
     updateFilter2Options();
-
-    // Auto load local & sync from Supabase Cloud
     loadTransactions();
-    fetchSupabaseCloudData().then(() => {
-      switchAppTab(savedTab);
-    });
+    switchAppTab(savedTab);
+
+    // Sync cloud data asynchronously in background
+    fetchSupabaseCloudData().catch(e => console.warn("Cloud sync note:", e));
   }
 
   function handleLogout() {
