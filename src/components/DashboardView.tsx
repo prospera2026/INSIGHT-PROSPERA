@@ -129,28 +129,28 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
   return (
     <div className="space-y-4">
-      {/* Header Banner & Right-Aligned Compact Filters */}
-      <div className="insight-card p-3.5 bg-slate-900 text-white border-3 border-black relative overflow-hidden flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+      {/* Header Banner & Right-Aligned Compact Filters (Theme Matched Background) */}
+      <div className="insight-card p-3.5 bg-[var(--insight-card)] text-[var(--insight-text)] border-3 border-[var(--insight-border)] relative overflow-hidden flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div className="flex-1">
           <div className="inline-block px-1.5 py-0.5 bg-[var(--google-blue)] text-white text-[8.5px] font-extrabold tracking-widest uppercase mb-1 border border-black shadow-[1.5px_1.5px_0_#000]">
             RINGKASAN EKSEKUTIF
           </div>
-          <h1 className="text-sm font-black tracking-tight leading-tight text-white">DASHBOARD UTAMA ARUS KAS</h1>
-          <p className="text-[10.5px] text-blue-200 font-semibold mt-0.5">
+          <h1 className="text-sm font-black tracking-tight leading-tight">DASHBOARD UTAMA ARUS KAS</h1>
+          <p className="text-[10.5px] text-[var(--insight-muted)] font-bold mt-0.5">
             Pemantauan saldo real-time SAISOKU.ID di Mobile & Desktop.
           </p>
         </div>
 
-        {/* Proportional & Right-Aligned Compact Filters */}
-        <div className="flex items-center gap-2.5 bg-slate-950 p-2 border-2 border-[var(--google-blue)] shadow-[2px_2px_0_#000] ml-auto w-full sm:w-auto justify-end">
+        {/* Proportional & Right-Aligned Compact Filters (Theme Matched) */}
+        <div className="flex items-center gap-2.5 bg-[var(--insight-panel)] p-2 border-2 border-[var(--insight-border)] shadow-[2px_2px_0_var(--insight-shadow)] ml-auto w-full sm:w-auto justify-end">
           <div className="w-28 sm:w-32">
-            <label className="block text-[8.5px] font-black text-white mb-0.5 uppercase tracking-wider flex items-center gap-1 font-sans">
+            <label className="block text-[8.5px] font-black text-[var(--insight-text)] mb-0.5 uppercase tracking-wider flex items-center gap-1 font-sans">
               <Filter className="w-2.5 h-2.5 text-[var(--google-blue)]" /> PERIODE
             </label>
             <select
               value={filterType}
               onChange={handleFilterTypeChange}
-              className="px-1.5 py-1 text-[11px] font-black bg-white text-slate-950 border-2 border-black h-7 rounded-none focus:outline-none w-full cursor-pointer font-sans"
+              className="px-1.5 py-1 text-[11px] font-black bg-white dark:bg-slate-900 text-[var(--insight-text)] border-2 border-[var(--insight-border)] h-7 rounded-none focus:outline-none w-full cursor-pointer font-sans"
             >
               <option value="monthly">Bulanan</option>
               <option value="quarterly">Kuartal</option>
@@ -159,13 +159,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
 
           <div className="w-36 sm:w-44">
-            <label className="block text-[8.5px] font-black text-white mb-0.5 uppercase tracking-wider flex items-center gap-1 font-sans">
+            <label className="block text-[8.5px] font-black text-[var(--insight-text)] mb-0.5 uppercase tracking-wider flex items-center gap-1 font-sans">
               <Calendar className="w-2.5 h-2.5 text-[var(--google-blue)]" /> PILIH PERIODE
             </label>
             <select
               value={filterValue}
               onChange={(e) => setFilterValue(e.target.value)}
-              className="px-1.5 py-1 text-[11px] font-black bg-white text-slate-950 border-2 border-black h-7 rounded-none focus:outline-none w-full cursor-pointer font-sans"
+              className="px-1.5 py-1 text-[11px] font-black bg-white dark:bg-slate-900 text-[var(--insight-text)] border-2 border-[var(--insight-border)] h-7 rounded-none focus:outline-none w-full cursor-pointer font-sans"
             >
               {filterType === "monthly" &&
                 MONTH_NAMES.map((name, idx) => {
