@@ -198,37 +198,37 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
       </div>
 
-      {/* METADATA 1: STAT CARDS */}
+      {/* METADATA 1: STAT CARDS (EQUAL HEIGHT & PROPORTIONAL) */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         {/* Total Debit / Pengeluaran */}
-        <div className="insight-card p-3 border-l-5 border-l-[var(--google-red)]">
-          <div className="text-[9px] font-extrabold text-slate-500 uppercase tracking-wider mb-0.5">
+        <div className="insight-card p-3 border-l-5 border-l-[var(--google-red)] flex flex-col justify-between min-h-[100px]">
+          <div className="text-[9px] font-black text-slate-500 uppercase tracking-wider">
             TOTAL DEBIT (PENGELUARAN)
           </div>
-          <div className="text-base font-black text-red-600">
+          <div className="text-lg font-black text-red-600 my-1 font-mono">
             {formatIDR(totalDebit)}
           </div>
-          <div className="text-[9px] font-bold text-red-600">
-            {filteredTransactions.filter((t) => t.debit > 0).length} Transaksi
+          <div className="text-[9px] font-bold text-red-600 flex items-center gap-1">
+            <span>●</span> {filteredTransactions.filter((t) => t.debit > 0).length} Transaksi Keluar
           </div>
         </div>
 
         {/* Total Credit / Pemasukan */}
-        <div className="insight-card p-3 border-l-5 border-l-[var(--google-green)]">
-          <div className="text-[9px] font-extrabold text-slate-500 uppercase tracking-wider mb-0.5">
+        <div className="insight-card p-3 border-l-5 border-l-[var(--google-green)] flex flex-col justify-between min-h-[100px]">
+          <div className="text-[9px] font-black text-slate-500 uppercase tracking-wider">
             TOTAL KREDIT (PEMASUKAN)
           </div>
-          <div className="text-base font-black text-green-600">
+          <div className="text-lg font-black text-green-600 my-1 font-mono">
             {formatIDR(totalCredit)}
           </div>
-          <div className="text-[9px] font-bold text-green-600">
-            {filteredTransactions.filter((t) => t.credit > 0).length} Transaksi
+          <div className="text-[9px] font-bold text-green-600 flex items-center gap-1">
+            <span>●</span> {filteredTransactions.filter((t) => t.credit > 0).length} Transaksi Masuk
           </div>
         </div>
 
         {/* Dynamic Net Balance Rule */}
         <div
-          className={`insight-card p-3 border-l-5 transition-all duration-200 ${
+          className={`insight-card p-3 border-l-5 flex flex-col justify-between min-h-[100px] transition-all duration-200 ${
             netBalance < 0
               ? "bg-red-600 border-l-red-900 text-white"
               : netBalance > 0
@@ -236,15 +236,15 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               : "bg-white dark:bg-slate-800 border-l-[var(--google-blue)] text-slate-900 dark:text-white"
           }`}
         >
-          <div className={`text-[9px] font-extrabold uppercase tracking-wider mb-0.5 ${netBalance !== 0 ? "text-slate-100" : "text-slate-500"}`}>
+          <div className={`text-[9px] font-black uppercase tracking-wider ${netBalance !== 0 ? "text-slate-100" : "text-slate-500"}`}>
             NET BALANCE (ARUS BERSIH)
           </div>
-          <div className="text-base font-black">
+          <div className="text-lg font-black font-mono my-1">
             {netBalance < 0 ? formatIDR(0) : formatIDR(netBalance)}
           </div>
           <div className={`text-[9px] font-bold ${netBalance !== 0 ? "text-slate-100" : "text-slate-500"}`}>
             {netBalance < 0
-              ? `Defisit / Minus (${formatIDR(netBalance)}) -> Ditampilkan Rp 0`
+              ? `Defisit (${formatIDR(netBalance)}) -> Set Rp 0`
               : netBalance > 0
               ? "Status: Surplus / Untung (Positif)"
               : "Status: OK / Netral"}
@@ -252,104 +252,108 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
       </div>
 
-      {/* METADATA 2 & METADATA 3 BALANCED GRID */}
+      {/* METADATA 2 & METADATA 3 BALANCED GRID (EQUAL HEIGHT 300px) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* METADATA 2: REKAP BULANAN JAN - DES */}
-        <div className="insight-card p-3">
-          <div className="flex items-center justify-between mb-2 pb-1.5 border-b-2 border-black dark:border-slate-700">
-            <h3 className="text-xs font-black uppercase">📅 METADATA 2: REKAP BULANAN JAN-DES</h3>
-            <span className="insight-badge badge-blue text-[8px] py-0.5 px-1.5">12 BULAN</span>
-          </div>
-          <div className="overflow-x-auto max-h-64">
-            <table className="w-full text-[10px]">
-              <thead>
-                <tr className="border-b border-black text-slate-600 dark:text-slate-300">
-                  <th className="py-1 px-1.5 text-left">Bulan</th>
-                  <th className="py-1 px-1.5 text-right text-red-600 font-extrabold">Debit (Pengeluaran)</th>
-                  <th className="py-1 px-1.5 text-right text-green-600 font-extrabold">Credit (Pemasukan)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {MONTH_NAMES.map((mName, idx) => {
-                  const d = monthlyMap[mName].debit;
-                  const c = monthlyMap[mName].credit;
-                  const isHighlighted = activeMonthIndices.includes(idx);
+        <div className="insight-card p-3 flex flex-col justify-between min-h-[300px]">
+          <div>
+            <div className="flex items-center justify-between mb-2 pb-1.5 border-b-2 border-black dark:border-slate-700">
+              <h3 className="text-xs font-black uppercase tracking-wide">📅 METADATA 2: REKAP BULANAN JAN-DES</h3>
+              <span className="insight-badge badge-blue text-[8px] py-0.5 px-1.5">12 BULAN</span>
+            </div>
+            <div className="overflow-y-auto max-h-56 pr-1">
+              <table className="w-full text-[10px]">
+                <thead>
+                  <tr className="border-b border-black text-slate-600 dark:text-slate-300 font-sans">
+                    <th className="py-1 px-1.5 text-left">Bulan</th>
+                    <th className="py-1 px-1.5 text-right text-red-600 font-extrabold">Debit</th>
+                    <th className="py-1 px-1.5 text-right text-green-600 font-extrabold">Credit</th>
+                  </tr>
+                </thead>
+                <tbody className="font-mono">
+                  {MONTH_NAMES.map((mName, idx) => {
+                    const d = monthlyMap[mName].debit;
+                    const c = monthlyMap[mName].credit;
+                    const isHighlighted = activeMonthIndices.includes(idx);
 
-                  return (
-                    <tr
-                      key={mName}
-                      className={`border-b border-slate-200 dark:border-slate-800 ${
-                        isHighlighted ? "bg-blue-100 dark:bg-slate-700 font-black border-l-4 border-l-[var(--google-blue)]" : ""
-                      }`}
-                    >
-                      <td className="py-1 px-1.5 font-bold flex items-center gap-1">
-                        {mName}
-                        {isHighlighted && (
-                          <span className="insight-badge badge-blue text-[7px] py-0 px-1">AKTIF</span>
-                        )}
-                      </td>
-                      <td className="py-1 px-1.5 text-right font-bold text-red-600">
-                        {d > 0 ? formatIDR(d) : "-"}
-                      </td>
-                      <td className="py-1 px-1.5 text-right font-bold text-green-600">
-                        {c > 0 ? formatIDR(c) : "-"}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                    return (
+                      <tr
+                        key={mName}
+                        className={`border-b border-slate-200 dark:border-slate-800 ${
+                          isHighlighted ? "bg-blue-100 dark:bg-slate-700 font-black border-l-4 border-l-[var(--google-blue)]" : ""
+                        }`}
+                      >
+                        <td className="py-1 px-1.5 font-bold font-sans flex items-center gap-1">
+                          {mName}
+                          {isHighlighted && (
+                            <span className="insight-badge badge-blue text-[7px] py-0 px-1">AKTIF</span>
+                          )}
+                        </td>
+                        <td className="py-1 px-1.5 text-right font-bold text-red-600">
+                          {d > 0 ? formatIDR(d) : "-"}
+                        </td>
+                        <td className="py-1 px-1.5 text-right font-bold text-green-600">
+                          {c > 0 ? formatIDR(c) : "-"}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
 
         {/* METADATA 3: TOP 5 NILAI TRANSAKSI */}
-        <div className="insight-card p-3">
-          <div className="flex items-center justify-between mb-2 pb-1.5 border-b-2 border-black dark:border-slate-700">
-            <h3 className="text-xs font-black uppercase">🏆 METADATA 3: TOP 5 NILAI TRANSAKSI</h3>
-            <span className="insight-badge badge-green text-[8px] py-0.5 px-1.5">TOP 5 NOMINAL</span>
-          </div>
-          <div className="overflow-x-auto max-h-64">
-            <table className="w-full text-[10px]">
-              <thead>
-                <tr className="border-b border-black text-slate-600 dark:text-slate-300">
-                  <th className="py-1 px-1.5 text-left">No</th>
-                  <th className="py-1 px-1.5 text-left">Deskripsi</th>
-                  <th className="py-1 px-1.5 text-right">Nominal</th>
-                </tr>
-              </thead>
-              <tbody>
-                {top5Transactions.length === 0 ? (
-                  <tr>
-                    <td colSpan={3} className="text-center py-4 text-slate-500 font-bold">
-                      Tidak ada transaksi pada periode filter ini.
-                    </td>
+        <div className="insight-card p-3 flex flex-col justify-between min-h-[300px]">
+          <div>
+            <div className="flex items-center justify-between mb-2 pb-1.5 border-b-2 border-black dark:border-slate-700">
+              <h3 className="text-xs font-black uppercase tracking-wide">🏆 METADATA 3: TOP 5 NILAI TRANSAKSI</h3>
+              <span className="insight-badge badge-green text-[8px] py-0.5 px-1.5">TOP 5 NOMINAL</span>
+            </div>
+            <div className="overflow-y-auto max-h-56 pr-1">
+              <table className="w-full text-[10px]">
+                <thead>
+                  <tr className="border-b border-black text-slate-600 dark:text-slate-300 font-sans">
+                    <th className="py-1 px-1.5 text-left w-8">No</th>
+                    <th className="py-1 px-1.5 text-left">Deskripsi</th>
+                    <th className="py-1 px-1.5 text-right">Nominal</th>
                   </tr>
-                ) : (
-                  top5Transactions.map((t, idx) => {
-                    const val = Math.max(t.debit, t.credit);
-                    const isDebit = t.debit > t.credit;
-                    return (
-                      <tr key={t.id || idx} className="border-b border-slate-200 dark:border-slate-800">
-                        <td className="py-1.5 px-1.5 font-black">#{idx + 1}</td>
-                        <td className="py-1.5 px-1.5">
-                          <div className="font-extrabold truncate max-w-[150px]">{t.description}</div>
-                          <div className="text-[8px] text-slate-500 font-mono">
-                            {t.journalNo} | {t.postDate}
-                          </div>
-                        </td>
-                        <td
-                          className={`py-1.5 px-1.5 text-right font-black ${
-                            isDebit ? "text-red-600" : "text-green-600"
-                          }`}
-                        >
-                          {formatIDR(val)}
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="font-mono">
+                  {top5Transactions.length === 0 ? (
+                    <tr>
+                      <td colSpan={3} className="text-center py-8 text-slate-500 font-bold font-sans">
+                        Tidak ada transaksi pada periode filter ini.
+                      </td>
+                    </tr>
+                  ) : (
+                    top5Transactions.map((t, idx) => {
+                      const val = Math.max(t.debit, t.credit);
+                      const isDebit = t.debit > t.credit;
+                      return (
+                        <tr key={t.id || idx} className="border-b border-slate-200 dark:border-slate-800">
+                          <td className="py-1.5 px-1.5 font-black">#{idx + 1}</td>
+                          <td className="py-1.5 px-1.5 font-sans">
+                            <div className="font-bold truncate max-w-[160px]">{t.description}</div>
+                            <div className="text-[8px] text-slate-500 font-mono">
+                              {t.journalNo} | {t.postDate}
+                            </div>
+                          </td>
+                          <td
+                            className={`py-1.5 px-1.5 text-right font-black ${
+                              isDebit ? "text-red-600" : "text-green-600"
+                            }`}
+                          >
+                            {formatIDR(val)}
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
