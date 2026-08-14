@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>INSIGHT PROSPERA — SAISOKU Financial Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --bg-page: #f1f5f9;
+    --panel-white: #ffffff;
+    --ink-900: #0f172a;
+    --ink-600: #475569;
+    --border: #0f172a;
+    --insight-shadow: #0f172a;
+    --insight-grid: #cbd5e1;
+    --brand-blue: #4285F4;
+    --brand-red: #EA4335;
+    --brand-green: #34A853;
+    --brand-yellow: #FBBC05;
+  }
+
+  html.dark {
+    --bg-page: #0f172a;
+    --panel-white: #1e293b;
+    --ink-900: #f8fafc;
+    --ink-600: #cbd5e1;
+    --border: #94a3b8;
+    --insight-shadow: #000000;
+    --insight-grid: #1e293b;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    margin: 0; font-family: 'Geist Mono', monospace; font-size: 13px;
+    background: linear-gradient(var(--insight-grid) 1px, transparent 1px), linear-gradient(90deg, var(--insight-grid) 1px, transparent 1px), var(--bg-page);
+    background-size: 24px 24px, 24px 24px, auto; color: var(--ink-900); min-height: 100vh;
+  }
+
+  .google-top-bar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000; height: 4px;
+    background: linear-gradient(90deg, #4285F4 0% 25%, #EA4335 25% 50%, #FBBC05 50% 75%, #34A853 75% 100%);
+  }
+
+  /* LOGIN PAGE STYLES */
+  .auth-stage { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+  .login-shell {
+    width: 100%; max-width: 840px; border: 4px solid #000; background: #fff;
+    box-shadow: 8px 8px 0 #000; display: grid; grid-template-columns: 1fr;
+  }
+  @media(min-width: 768px) { .login-shell { grid-template-columns: 5fr 7fr; } }
+  
+  .panel-showcase {
+    background: linear-gradient(135deg, #3b2fe0, #2f6bff, #17c3d9);
+    padding: 32px; color: #fff; display: flex; flex-direction: column; justify-content: space-between; relative; overflow: hidden;
+  }
+  .panel-form { padding: 36px; background: var(--panel-white); }
+
+  /* APP LAYOUT */
+  .app-stage { display: none; min-height: 100vh; }
+  .sidebar {
+    width: 230px; background: var(--panel-white); border-right: 4px solid var(--border);
+    padding: 16px; display: flex; flex-direction: column; justify-content: space-between; min-height: 100vh;
+  }
+  .main-content { flex: 1; padding: 28px; overflow-y: auto; max-height: 100vh; }
+
+  /* NEOBRUTALIST COMPONENTS */
+  .insight-card {
+    background: var(--panel-white); border: 3px solid var(--border);
+    box-shadow: 4px 4px 0 var(--insight-shadow); padding: 16px; margin-bottom: 20px;
+  }
+  .insight-button {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 8px 14px; font-family: inherit; font-size: 11px; font-weight: 800;
+    color: var(--ink-900); background: var(--panel-white); border: 2px solid var(--border);
+    box-shadow: 3px 3px 0 var(--insight-shadow); cursor: pointer; text-transform: uppercase;
+  }
+  .insight-button--primary { background: var(--brand-blue); color: #fff; border-color: #000; box-shadow: 3px 3px 0 #000; }
+  .insight-button--danger { background: var(--brand-red); color: #fff; border-color: #000; box-shadow: 3px 3px 0 #000; }
+  .insight-button--success { background: var(--brand-green); color: #fff; border-color: #000; box-shadow: 3px 3px 0 #000; }
+
+  .insight-input {
+    background: var(--panel-white); border: 2px solid var(--border); color: var(--ink-900);
+    padding: 8px 12px; font-family: inherit; font-size: 12px; outline: none; width: 100%;
+    box-shadow: 2px 2px 0 var(--insight-shadow);
+  }
+
+  .insight-badge {
+    display: inline-block; padding: 2px 6px; font-size: 9px; font-weight: 800;
+    border: 1.5px solid var(--border); text-transform: uppercase; box-shadow: 1.5px 1.5px 0 #000;
+  }
+  .badge-blue { background: var(--brand-blue); color: #fff; }
+  .badge-green { background: var(--brand-green); color: #fff; }
+  .badge-red { background: var(--brand-red); color: #fff; }
+  .badge-yellow { background: var(--brand-yellow); color: #000; }
+
+  /* TABLE */
+  table { w-full; width: 100%; border-collapse: collapse; text-align: left; }
+  th, td { padding: 10px; border-bottom: 2px solid var(--border); font-size: 11px; }
+  th { background: #0f172a; color: #fff; text-transform: uppercase; font-size: 10px; }
+
+  .tab-inactive { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="google-top-bar"></div>
+
+<!-- 1. AUTHENTICATION STAGE (LOGIN) -->
+<div id="authStage" class="auth-stage">
+  <div class="login-shell">
+    <div class="panel-showcase">
+      <div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
+          <div style="width:36px;height:36px;background:#fff;border:2px solid #000;box-shadow:2px 2px 0 #000;display:flex;align-items:center;justify-content:center;font-weight:900;color:#000;font-size:18px;">P</div>
+          <span style="font-weight:800;font-size:20px;">INSIGHT PROSPERA</span>
+        </div>
+        <p style="font-size:10px;background:rgba(0,0,0,0.3);padding:2px 6px;display:inline-block;color:#fde047;font-weight:800;margin-bottom:10px;">SAISOKU FINANCIAL HUB</p>
+        <h2 style="font-size:18px;font-weight:800;margin-bottom:8px;">Sistem Dashboard Keuangan & Live CSV Parser</h2>
+        <p style="font-size:11px;opacity:0.9;">Kelola mutasi perbankan, analisis debit/kredit, dan sinkronisasi Supabase Storage.</p>
+      </div>
+      <div style="font-size:10px;font-weight:700;border-top:1px solid rgba(255,255,255,0.2);padding-top:12px;">© 2026 SAISOKU.ID</div>
+    </div>
+
+    <div class="panel-form">
+      <div style="font-size:10px;font-weight:800;color:var(--brand-blue);text-transform:uppercase;">AUTHENTICATION PORTAL</div>
+      <h1 style="font-size:18px;font-weight:900;margin-bottom:16px;">INSIGHT PROSPERA LOGIN</h1>
+
+      <div id="loginAlert" style="display:none;padding:8px;background:#fee2e2;border:2px solid #ef4444;color:#b91c1c;font-size:11px;font-weight:700;margin-bottom:14px;"></div>
+
+      <div style="display:flex;border:2px solid #000;background:#f1f5f9;padding:3px;margin-bottom:16px;">
+        <button id="btnTabKey" onclick="switchLoginTab('key')" style="flex:1;padding:8px;font-size:11px;font-weight:800;border:none;background:#fff;border:1.5px solid #000;cursor:pointer;">Access Key (Member)</button>
+        <button id="btnTabAdmin" onclick="switchLoginTab('admin')" style="flex:1;padding:8px;font-size:11px;font-weight:800;border:none;background:transparent;cursor:pointer;">Admin Panel</button>
+      </div>
+
+      <!-- FORM KEY -->
+      <form id="formKey" onsubmit="handleKeyLogin(event)">
+        <div style="margin-bottom:14px;">
+          <label style="display:block;font-size:10px;font-weight:800;margin-bottom:4px;">ACCESS KEY MEMBER</label>
+          <input id="inputKey" type="text" placeholder="AGUNG69" maxlength="7" class="insight-input" style="text-align:center;font-weight:900;font-size:14px;letter-spacing:2px;color:var(--brand-blue);" value="AGUNG69">
+        </div>
+        <button type="submit" class="insight-button insight-button--primary" style="width:100%;padding:10px;">MASUK KE DASHBOARD →</button>
+      </form>
+
+      <!-- FORM ADMIN -->
+      <form id="formAdmin" onsubmit="handleAdminLogin(event)" class="tab-inactive">
+        <div style="margin-bottom:10px;">
+          <label style="display:block;font-size:10px;font-weight:800;margin-bottom:4px;">EMAIL ADMIN</label>
+          <input id="inputAdminUser" type="text" placeholder="prospera@gmail.com" class="insight-input" value="prospera@gmail.com">
+        </div>
+        <div style="margin-bottom:14px;">
+          <label style="display:block;font-size:10px;font-weight:800;margin-bottom:4px;">PASSWORD ADMIN</label>
+          <input id="inputAdminPass" type="password" placeholder="prospera123" class="insight-input" value="prospera123">
+        </div>
+        <button type="submit" class="insight-button insight-button--primary" style="width:100%;padding:10px;">LOGIN ADMIN PANEL →</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- 2. MAIN APP STAGE -->
+<div id="appStage" class="app-stage" style="display:flex;">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;padding-bottom:10px;border-bottom:3px solid var(--border);">
+        <div style="width:28px;height:28px;background:var(--brand-blue);border:2px solid #000;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;box-shadow:1.5px 1.5px 0 #000;">P</div>
+        <span style="font-weight:900;font-size:16px;">PROSPERA</span>
+      </div>
+
+      <nav style="display:flex;flex-direction:column;gap:8px;">
+        <button onclick="switchAppTab('dashboard')" id="navDashboard" class="insight-button insight-button--primary" style="justify-content:flex-start;">📊 Dashboard Utama</button>
+        <button onclick="switchAppTab('transactions')" id="navTransactions" class="insight-button" style="justify-content:flex-start;">📁 UPLOAD TRANSC</button>
+        <button onclick="switchAppTab('categories')" id="navCategories" class="insight-button" style="justify-content:flex-start;">🏷️ Kategori Transaksi</button>
+      </nav>
+    </div>
+
+    <div>
+      <div style="padding:8px;background:#f1f5f9;border:2px solid var(--border);margin-bottom:10px;">
+        <div style="font-size:9px;font-weight:800;color:var(--brand-green);">● STORAGE STATUS</div>
+        <div style="font-size:9px;color:#64748b;">Supabase Storage / Local</div>
+      </div>
+      <button onclick="handleLogout()" class="insight-button insight-button--danger" style="width:100%;padding:8px;">LOGOUT SESI</button>
+    </div>
+  </aside>
+
+  <!-- MAIN WORKSPACE -->
+  <main class="main-content">
+    <!-- VIEW 1: DASHBOARD UTAMA -->
+    <div id="viewDashboard">
+      <div class="insight-card" style="background:#0f172a;color:#fff;padding:12px 16px;">
+        <div style="font-size:9px;background:var(--brand-blue);display:inline-block;padding:2px 6px;font-weight:800;margin-bottom:4px;">RINGKASAN EKSEKUTIF</div>
+        <h1 style="font-size:16px;font-weight:900;">DASHBOARD UTAMA ARUS KAS</h1>
+        <p style="font-size:10px;color:#94a3b8;">Pemantauan real-time saldo, pengeluaran debit, dan pemasukan kredit SAISOKU.ID.</p>
+      </div>
+
+      <!-- STAT CARDS -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:12px;margin-bottom:20px;">
+        <div class="insight-card" style="border-left:5px solid var(--brand-red);padding:12px;">
+          <div style="font-size:9px;font-weight:800;color:#64748b;">TOTAL DEBIT (PENGELUARAN)</div>
+          <div id="dashDebit" style="font-size:18px;font-weight:900;color:#ef4444;margin:4px 0;">Rp 0</div>
+          <div id="dashDebitCount" style="font-size:9px;font-weight:700;color:#ef4444;">0 Transaksi</div>
+        </div>
+        <div class="insight-card" style="border-left:5px solid var(--brand-green);padding:12px;">
+          <div style="font-size:9px;font-weight:800;color:#64748b;">TOTAL KREDIT (PEMASUKAN)</div>
+          <div id="dashCredit" style="font-size:18px;font-weight:900;color:#22c55e;margin:4px 0;">Rp 0</div>
+          <div id="dashCreditCount" style="font-size:9px;font-weight:700;color:#22c55e;">0 Transaksi</div>
+        </div>
+        <div class="insight-card" style="border-left:5px solid var(--brand-blue);padding:12px;">
+          <div style="font-size:9px;font-weight:800;color:#64748b;">NET BALANCE (ARUS BERSIH)</div>
+          <div id="dashNet" style="font-size:18px;font-weight:900;margin:4px 0;">Rp 0</div>
+          <div id="dashNetStatus" style="font-size:9px;font-weight:700;color:#64748b;">Status: OK</div>
+        </div>
+      </div>
+
+      <!-- CHART AREA -->
+      <div class="insight-card">
+        <h3 style="font-size:12px;font-weight:800;margin-bottom:12px;text-transform:uppercase;">📊 GRAFIK ARUS KAS PER TANGGAL</h3>
+        <div style="height:220px;"><canvas id="cashFlowChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- VIEW 2: UPLOAD TRANSC -->
+    <div id="viewTransactions" class="tab-inactive">
+      <div class="insight-card" style="background:#0f172a;color:#fff;padding:12px 16px;">
+        <div style="font-size:9px;background:var(--brand-green);display:inline-block;padding:2px 6px;font-weight:800;margin-bottom:4px;">STORAGE CLOUD PARSER</div>
+        <h1 style="font-size:16px;font-weight:900;">DATABASE TRANSAKSI & UPLOAD CSV</h1>
+        <p style="font-size:10px;color:#93c5fd;font-weight:700;">Data tersimpan otomatis di LocalStorage browser & Supabase File Storage.</p>
+        <div style="margin-top:10px;display:flex;gap:8px;">
+          <label class="insight-button insight-button--primary" style="font-size:10px;">
+            📤 UPLOAD BENCHMARK CSV
+            <input type="file" accept=".csv" onchange="handleFileUpload(event)" style="display:none;">
+          </label>
+          <button onclick="handleResetDB()" class="insight-button insight-button--danger" style="font-size:10px;">🗑️ RESET DB</button>
+        </div>
+      </div>
+
+      <!-- SEARCH & TABLE -->
+      <div class="insight-card" style="padding:10px;">
+        <input type="text" id="txSearch" placeholder="Cari deskripsi, No Jurnal..." class="insight-input" style="max-width:280px;font-size:11px;" onkeyup="renderTxTable()">
+      </div>
+
+      <div class="insight-card" style="padding:0;overflow:hidden;">
+        <table>
+          <thead>
+            <tr>
+              <th>Post Date</th><th>Journal No</th><th>Category</th><th>Description</th><th style="text-align:right;">Debit</th><th style="text-align:right;">Credit</th><th style="text-align:center;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="txTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- VIEW 3: KATEGORI TRANSAKSI -->
+    <div id="viewCategories" class="tab-inactive">
+      <div class="insight-card" style="background:#0f172a;color:#fff;padding:12px 16px;">
+        <h1 style="font-size:16px;font-weight:900;">MANAJEMEN KATEGORI TRANSAKSI</h1>
+        <p style="font-size:10px;color:#94a3b8;">Kelola tag pengelompokan transaksi keuangan SAISOKU.</p>
+      </div>
+
+      <div class="insight-card">
+        <h3 style="font-size:11px;font-weight:800;margin-bottom:8px;">TAMBAH KATEGORI BARU</h3>
+        <div style="display:flex;gap:8px;">
+          <input type="text" id="newCatInput" placeholder="Nama kategori baru..." class="insight-input">
+          <button onclick="handleAddCategory()" class="insight-button insight-button--success" style="white-space:nowrap;">+ SIMPAN</button>
+        </div>
+      </div>
+
+      <div class="insight-card">
+        <h3 style="font-size:11px;font-weight:800;margin-bottom:8px;">DAFTAR KATEGORI SYSTEM</h3>
+        <div id="catList" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- DETAIL POPUP MODAL -->
+<div id="detailModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;align-items:center;justify-content:center;padding:16px;">
+  <div class="insight-card" style="max-width:450px;width:100%;background:#fff;border:4px solid #000;box-shadow:8px 8px 0 #000;padding:0;">
+    <div style="background:#0f172a;color:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;">
+      <h3 style="font-size:12px;font-weight:900;">DETAIL TRANSAKSI</h3>
+      <button onclick="closeModal()" style="background:none;border:none;color:#fff;font-weight:900;cursor:pointer;">✕</button>
+    </div>
+    <div style="padding:16px;font-size:11px;">
+      <div style="margin-bottom:8px;"><strong>Journal No:</strong> <span id="mJournal"></span></div>
+      <div style="margin-bottom:8px;"><strong>Post Date:</strong> <span id="mDate"></span></div>
+      <div style="margin-bottom:8px;"><strong>Category:</strong> <span id="mCategory" class="insight-badge badge-blue"></span></div>
+      <div style="margin-bottom:12px;"><strong>Deskripsi:</strong><div id="mDesc" style="padding:8px;background:#f1f5f9;border:1px solid #000;margin-top:4px;"></div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div style="padding:8px;background:#fee2e2;border:1.5px solid #ef4444;"><strong>Debit:</strong> <span id="mDebit" style="color:#dc2626;font-weight:900;"></span></div>
+        <div style="padding:8px;background:#dcfce7;border:1.5px solid #22c55e;"><strong>Credit:</strong> <span id="mCredit" style="color:#16a34a;font-weight:900;"></span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let transactions = [];
+  let categories = ["Biaya Bank / BIFAST", "Purchase Order (PO)", "PaDi UMKM / Inbound", "Simpanan / Tabungan", "Titip Bayar", "Inventaris / Belanja Laptop", "Lain-lain / Operational"];
+  let chartInstance = null;
+
+  function formatIDR(num) {
+    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num || 0);
+  }
+
+  function switchLoginTab(tab) {
+    document.getElementById('formKey').classList.toggle('tab-inactive', tab !== 'key');
+    document.getElementById('formAdmin').classList.toggle('tab-inactive', tab !== 'admin');
+    document.getElementById('btnTabKey').style.background = tab === 'key' ? '#fff' : 'transparent';
+    document.getElementById('btnTabAdmin').style.background = tab === 'admin' ? '#fff' : 'transparent';
+  }
+
+  function handleKeyLogin(e) {
+    e.preventDefault();
+    const key = document.getElementById('inputKey').value.trim().toUpperCase();
+    if (key === 'AGUNG69') {
+      enterApp();
+    } else {
+      showLoginAlert('Access Key Salah! Gunakan kode akses: AGUNG69');
+    }
+  }
+
+  function handleAdminLogin(e) {
+    e.preventDefault();
+    const user = document.getElementById('inputAdminUser').value.trim();
+    const pass = document.getElementById('inputAdminPass').value.trim();
+    if (user === 'prospera@gmail.com' && pass === 'prospera123') {
+      enterApp();
+    } else {
+      showLoginAlert('Kredensial Admin Salah! (prospera@gmail.com / prospera123)');
+    }
+  }
+
+  function showLoginAlert(msg) {
+    const el = document.getElementById('loginAlert');
+    el.innerText = msg; el.style.display = 'block';
+  }
+
+  function enterApp() {
+    document.getElementById('authStage').style.display = 'none';
+    document.getElementById('appStage').style.display = 'flex';
+    loadTransactions();
+    switchAppTab('dashboard');
+  }
+
+  function handleLogout() {
+    document.getElementById('appStage').style.display = 'none';
+    document.getElementById('authStage').style.display = 'flex';
+  }
+
+  function switchAppTab(tab) {
+    document.getElementById('viewDashboard').classList.toggle('tab-inactive', tab !== 'dashboard');
+    document.getElementById('viewTransactions').classList.toggle('tab-inactive', tab !== 'transactions');
+    document.getElementById('viewCategories').classList.toggle('tab-inactive', tab !== 'categories');
+
+    ['navDashboard', 'navTransactions', 'navCategories'].forEach(id => {
+      document.getElementById(id).className = 'insight-button' + (id.toLowerCase().includes(tab) ? ' insight-button--primary' : '');
+    });
+
+    if (tab === 'dashboard') renderDashboard();
+    if (tab === 'transactions') renderTxTable();
+    if (tab === 'categories') renderCategories();
+  }
+
+  function handleFileUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    Papa.parse(file, {
+      header: true, skipEmptyLines: true,
+      complete: function(results) {
+        transactions = results.data.map((row, idx) => {
+          const debit = parseFloat((row['Debit'] || row['debit'] || '0').replace(/,/g, '')) || 0;
+          const credit = parseFloat((row['Credit'] || row['credit'] || '0').replace(/,/g, '')) || 0;
+          const desc = row['Description'] || row['description'] || 'Transaksi CSV';
+          
+          let cat = 'Lain-lain / Operational';
+          if (desc.toUpperCase().includes('BIFAST')) cat = 'Biaya Bank / BIFAST';
+          else if (desc.toUpperCase().includes('PO-')) cat = 'Purchase Order (PO)';
+          else if (desc.toUpperCase().includes('PADI')) cat = 'PaDi UMKM / Inbound';
+          else if (desc.toUpperCase().includes('LAPTOP')) cat = 'Inventaris / Belanja Laptop';
+
+          return { id: idx, postDate: row['Post Date'] || '-', journalNo: row['Journal No.'] || `J-${idx}`, description: desc, debit, credit, category: cat };
+        });
+
+        localStorage.setItem('PROSPERA_HTML_TX', JSON.stringify(transactions));
+        alert(`Berhasil memuat ${transactions.length} transaksi CSV!`);
+        renderDashboard(); renderTxTable();
+      }
+    });
+  }
+
+  function loadTransactions() {
+    const data = localStorage.getItem('PROSPERA_HTML_TX');
+    if (data) transactions = JSON.parse(data);
+  }
+
+  function handleResetDB() {
+    if (confirm('Kosongkan semua data transaksi?')) {
+      transactions = [];
+      localStorage.removeItem('PROSPERA_HTML_TX');
+      renderDashboard(); renderTxTable();
+    }
+  }
+
+  function renderDashboard() {
+    const debit = transactions.reduce((a, b) => a + b.debit, 0);
+    const credit = transactions.reduce((a, b) => a + b.credit, 0);
+    const net = credit - debit;
+
+    document.getElementById('dashDebit').innerText = formatIDR(debit);
+    document.getElementById('dashCredit').innerText = formatIDR(credit);
+    document.getElementById('dashNet').innerText = formatIDR(net);
+    document.getElementById('dashDebitCount').innerText = `${transactions.filter(t=>t.debit>0).length} Transaksi`;
+    document.getElementById('dashCreditCount').innerText = `${transactions.filter(t=>t.credit>0).length} Transaksi`;
+
+    // Render Chart
+    const dateMap = {};
+    transactions.forEach(t => {
+      const d = t.postDate.split(' ')[0];
+      if (!dateMap[d]) dateMap[d] = { debit: 0, credit: 0 };
+      dateMap[d].debit += t.debit;
+      dateMap[d].credit += t.credit;
+    });
+
+    const labels = Object.keys(dateMap);
+    const debitData = labels.map(l => dateMap[l].debit);
+    const creditData = labels.map(l => dateMap[l].credit);
+
+    if (chartInstance) chartInstance.destroy();
+    const ctx = document.getElementById('cashFlowChart').getContext('2d');
+    chartInstance = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          { label: 'Pengeluaran (Debit)', data: debitData, backgroundColor: '#EA4335' },
+          { label: 'Pemasukan (Kredit)', data: creditData, backgroundColor: '#34A853' }
+        ]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+  }
+
+  function renderTxTable() {
+    const tbody = document.getElementById('txTableBody');
+    const search = document.getElementById('txSearch').value.toLowerCase();
+    const filtered = transactions.filter(t => t.description.toLowerCase().includes(search) || t.journalNo.toLowerCase().includes(search));
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = '<tr><td colSpan="7" style="text-align:center;padding:20px;">Belum ada data transaksi. Silakan Upload CSV.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(t => `
+      <tr>
+        <td>${t.postDate}</td>
+        <td><strong>${t.journalNo}</strong></td>
+        <td><span class="insight-badge badge-blue">${t.category}</span></td>
+        <td>${t.description}</td>
+        <td style="text-align:right;color:#dc2626;font-weight:800;">${t.debit > 0 ? formatIDR(t.debit) : '-'}</td>
+        <td style="text-align:right;color:#16a34a;font-weight:800;">${t.credit > 0 ? formatIDR(t.credit) : '-'}</td>
+        <td style="text-align:center;">
+          <button onclick="viewDetail(${t.id})" class="insight-button insight-button--primary" style="font-size:9px;padding:4px 8px;">VIEW</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  function viewDetail(id) {
+    const t = transactions.find(x => x.id === id);
+    if (!t) return;
+    document.getElementById('mJournal').innerText = t.journalNo;
+    document.getElementById('mDate').innerText = t.postDate;
+    document.getElementById('mCategory').innerText = t.category;
+    document.getElementById('mDesc').innerText = t.description;
+    document.getElementById('mDebit').innerText = formatIDR(t.debit);
+    document.getElementById('mCredit').innerText = formatIDR(t.credit);
+    document.getElementById('detailModal').style.display = 'flex';
+  }
+
+  function closeModal() {
+    document.getElementById('detailModal').style.display = 'none';
+  }
+
+  function handleAddCategory() {
+    const val = document.getElementById('newCatInput').value.trim();
+    if (val && !categories.includes(val)) {
+      categories.push(val);
+      document.getElementById('newCatInput').value = '';
+      renderCategories();
+    }
+  }
+
+  function renderCategories() {
+    document.getElementById('catList').innerHTML = categories.map(c => `<span class="insight-badge badge-blue" style="font-size:11px;padding:6px 10px;margin:2px;">🏷️ ${c}</span>`).join('');
+  }
+</script>
+</body>
+</html>
