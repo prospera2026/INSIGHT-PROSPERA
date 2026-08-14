@@ -143,17 +143,17 @@ export const TransactionsView: React.FC<TransactionsViewProps> = ({
 
   return (
     <div className="space-y-4">
-      {/* HEADER BANNER */}
-      <div className="insight-card p-3 bg-slate-900 text-white border-2 border-black">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2 pb-2 border-b border-slate-700">
+      {/* HEADER BANNER (Theme Matched Background) */}
+      <div className="insight-card p-3.5 bg-[var(--insight-card)] text-[var(--insight-text)] border-3 border-[var(--insight-border)]">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2 pb-2 border-b-2 border-[var(--insight-border)]">
           <div>
             <div className="flex items-center gap-2 mb-0.5">
-              <span className="inline-block px-1.5 py-0.2 bg-[var(--google-green)] text-white text-[8.5px] font-extrabold tracking-wider uppercase border border-black">
+              <span className="inline-block px-1.5 py-0.2 bg-[var(--google-green)] text-white text-[8.5px] font-extrabold tracking-wider uppercase border border-black shadow-[1px_1px_0_#000]">
                 SUPABASE DATABASE CLOUD
               </span>
             </div>
             <h1 className="text-sm font-black tracking-tight leading-tight">DATABASE TRANSAKSI & UPLOAD CSV</h1>
-            <p className="text-[10px] text-blue-300 font-bold">
+            <p className="text-[10.5px] text-[var(--insight-muted)] font-bold mt-0.5">
               Tersimpan permanen di Supabase Cloud Database & Storage.
             </p>
           </div>
@@ -162,13 +162,13 @@ export const TransactionsView: React.FC<TransactionsViewProps> = ({
             {transactions.length > 0 && (
               <button
                 onClick={handleClearDatabase}
-                className="insight-button insight-button--danger text-[10px] py-1 px-2.5 flex items-center gap-1"
+                className="insight-button insight-button--danger text-[10px] py-1 px-2.5 flex items-center gap-1 font-sans"
               >
                 <Trash2 className="w-3 h-3" /> RESET DB
               </button>
             )}
 
-            <label className="insight-button insight-button--primary cursor-pointer text-[10px] py-1 px-2.5 flex items-center gap-1.5 whitespace-nowrap">
+            <label className="insight-button insight-button--primary cursor-pointer text-[10px] py-1 px-2.5 flex items-center gap-1.5 whitespace-nowrap font-sans">
               <UploadCloud className="w-3.5 h-3.5" /> UPLOAD BENCHMARK CSV
               <input type="file" accept=".csv" onChange={handleFileUpload} className="hidden" />
             </label>
@@ -176,40 +176,40 @@ export const TransactionsView: React.FC<TransactionsViewProps> = ({
         </div>
 
         {uploadSuccessMessage && (
-          <div className="p-2.5 bg-green-950 border-2 border-green-500 text-green-200 text-xs font-bold flex items-center justify-between mb-2">
+          <div className="p-2.5 bg-green-100 dark:bg-green-950/60 border-2 border-green-500 text-green-800 dark:text-green-200 text-xs font-bold flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-green-400" />
+              <CheckCircle2 className="w-4 h-4 text-green-600" />
               <span>{uploadSuccessMessage}</span>
             </div>
             <button
               onClick={onNavigateToDashboard}
-              className="px-2 py-1 bg-green-500 text-black font-extrabold text-[10px] uppercase border border-black hover:bg-green-400"
+              className="px-2 py-1 bg-green-600 text-white font-extrabold text-[10px] uppercase border border-black hover:bg-green-500"
             >
               LIHAT DASHBOARD →
             </button>
           </div>
         )}
 
-        {/* Quick Rekap Summary */}
+        {/* Quick Rekap Summary (Theme Matched) */}
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 mt-1">
-          <div className="p-2 bg-slate-800 border border-black">
-            <div className="text-[8.5px] font-extrabold text-slate-400 uppercase">TOTAL TRANSAKSI</div>
-            <div className="text-xs font-black text-white">{filteredTransactions.length} Items</div>
+          <div className="p-2 bg-[var(--insight-panel)] border-2 border-[var(--insight-border)]">
+            <div className="text-[8.5px] font-black text-slate-800 dark:text-slate-300 uppercase">TOTAL TRANSAKSI</div>
+            <div className="text-xs font-black text-[var(--insight-text)] font-mono">{filteredTransactions.length} Items</div>
           </div>
 
-          <div className="p-2 bg-slate-800 border border-black">
-            <div className="text-[8.5px] font-extrabold text-red-400 uppercase">REKAP DEBIT</div>
-            <div className="text-xs font-black text-red-400">{formatIDR(totalFilteredDebit)}</div>
+          <div className="p-2 bg-[var(--insight-panel)] border-2 border-[var(--insight-border)]">
+            <div className="text-[8.5px] font-black text-red-600 dark:text-red-400 uppercase">REKAP DEBIT</div>
+            <div className="text-xs font-black text-red-600 dark:text-red-400 font-mono">{formatIDR(totalFilteredDebit)}</div>
           </div>
 
-          <div className="p-2 bg-slate-800 border border-black">
-            <div className="text-[8.5px] font-extrabold text-green-400 uppercase">REKAP KREDIT</div>
-            <div className="text-xs font-black text-green-400">{formatIDR(totalFilteredCredit)}</div>
+          <div className="p-2 bg-[var(--insight-panel)] border-2 border-[var(--insight-border)]">
+            <div className="text-[8.5px] font-black text-green-700 dark:text-green-400 uppercase">REKAP KREDIT</div>
+            <div className="text-xs font-black text-green-700 dark:text-green-400 font-mono">{formatIDR(totalFilteredCredit)}</div>
           </div>
 
-          <div className="p-2 bg-slate-800 border border-black">
-            <div className="text-[8.5px] font-extrabold text-blue-400 uppercase">NET ARUS</div>
-            <div className="text-xs font-black text-blue-400">{formatIDR(netFilteredBalance)}</div>
+          <div className="p-2 bg-[var(--insight-panel)] border-2 border-[var(--insight-border)]">
+            <div className="text-[8.5px] font-black text-[var(--google-blue)] uppercase">NET ARUS</div>
+            <div className="text-xs font-black text-[var(--google-blue)] font-mono">{formatIDR(netFilteredBalance)}</div>
           </div>
         </div>
       </div>

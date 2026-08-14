@@ -120,17 +120,17 @@ export const CategoriesView: React.FC<CategoriesViewProps> = ({
 
   return (
     <div className="space-y-4">
-      {/* SECTION 1: HEADER BANNER (Identik dengan Model Transactions) */}
-      <div className="insight-card p-3 bg-slate-900 text-white border-2 border-black">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2 pb-2 border-b border-slate-700">
+      {/* SECTION 1: HEADER BANNER (Theme Matched Background) */}
+      <div className="insight-card p-3.5 bg-[var(--insight-card)] text-[var(--insight-text)] border-3 border-[var(--insight-border)]">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2 pb-2 border-b-2 border-[var(--insight-border)]">
           <div>
             <div className="flex items-center gap-2 mb-0.5">
-              <span className="inline-block px-1.5 py-0.2 bg-[var(--google-blue)] text-white text-[8.5px] font-extrabold tracking-wider uppercase border border-black">
+              <span className="inline-block px-1.5 py-0.2 bg-[var(--google-blue)] text-white text-[8.5px] font-extrabold tracking-wider uppercase border border-black shadow-[1px_1px_0_#000]">
                 DATABASE KATEGORI SISTEM
               </span>
             </div>
             <h1 className="text-sm font-black tracking-tight leading-tight">MANAJEMEN KATEGORI TRANSAKSI</h1>
-            <p className="text-[10px] text-blue-300 font-bold">
+            <p className="text-[10.5px] text-[var(--insight-muted)] font-bold mt-0.5">
               Master data tag kategori untuk pengelompokan laporan arus kas transaksi.
             </p>
           </div>
@@ -138,7 +138,7 @@ export const CategoriesView: React.FC<CategoriesViewProps> = ({
           <div className="flex items-center gap-2 self-end sm:self-center">
             <button
               onClick={handleResetDefault}
-              className="insight-button insight-button--danger text-[10px] py-1 px-2.5 flex items-center gap-1"
+              className="insight-button insight-button--danger text-[10px] py-1 px-2.5 flex items-center gap-1 font-sans"
             >
               <Trash2 className="w-3 h-3" /> RESET DEFAULT
             </button>
@@ -146,34 +146,34 @@ export const CategoriesView: React.FC<CategoriesViewProps> = ({
         </div>
 
         {successMsg && (
-          <div className="p-2.5 bg-green-950 border-2 border-green-500 text-green-200 text-xs font-bold flex items-center justify-between mb-2">
+          <div className="p-2.5 bg-green-100 dark:bg-green-950/60 border-2 border-green-500 text-green-800 dark:text-green-200 text-xs font-bold flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-green-400" />
+              <CheckCircle2 className="w-4 h-4 text-green-600" />
               <span>{successMsg}</span>
             </div>
           </div>
         )}
 
-        {/* Quick Rekap Summary (4 Kotak Identik) */}
+        {/* Quick Rekap Summary (Theme Matched) */}
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 mt-1">
-          <div className="p-2 bg-slate-800 border border-black">
-            <div className="text-[8.5px] font-extrabold text-slate-400 uppercase">TOTAL KATEGORI</div>
-            <div className="text-xs font-black text-white">{categories.length} Kategori</div>
+          <div className="p-2 bg-[var(--insight-panel)] border-2 border-[var(--insight-border)]">
+            <div className="text-[8.5px] font-black text-slate-800 dark:text-slate-300 uppercase">TOTAL KATEGORI</div>
+            <div className="text-xs font-black text-[var(--insight-text)] font-mono">{categories.length} Kategori</div>
           </div>
 
-          <div className="p-2 bg-slate-800 border border-black">
-            <div className="text-[8.5px] font-extrabold text-blue-400 uppercase">TRANSAKSI TERKAIT</div>
-            <div className="text-xs font-black text-blue-400">{totalUsedTransactions} Items</div>
+          <div className="p-2 bg-[var(--insight-panel)] border-2 border-[var(--insight-border)]">
+            <div className="text-[8.5px] font-black text-[var(--google-blue)] uppercase">TRANSAKSI TERKAIT</div>
+            <div className="text-xs font-black text-[var(--google-blue)] font-mono">{totalUsedTransactions} Items</div>
           </div>
 
-          <div className="p-2 bg-slate-800 border border-black">
-            <div className="text-[8.5px] font-extrabold text-green-400 uppercase">KATEGORI TERSARING</div>
-            <div className="text-xs font-black text-green-400">{filteredCategories.length} Hasil</div>
+          <div className="p-2 bg-[var(--insight-panel)] border-2 border-[var(--insight-border)]">
+            <div className="text-[8.5px] font-black text-green-700 dark:text-green-400 uppercase">KATEGORI TERSARING</div>
+            <div className="text-xs font-black text-green-700 dark:text-green-400 font-mono">{filteredCategories.length} Hasil</div>
           </div>
 
-          <div className="p-2 bg-slate-800 border border-black">
-            <div className="text-[8.5px] font-extrabold text-yellow-400 uppercase">STATUS STORAGE</div>
-            <div className="text-xs font-black text-yellow-400">LocalStorage Active</div>
+          <div className="p-2 bg-[var(--insight-panel)] border-2 border-[var(--insight-border)]">
+            <div className="text-[8.5px] font-black text-yellow-600 dark:text-yellow-400 uppercase">STATUS STORAGE</div>
+            <div className="text-xs font-black text-yellow-600 dark:text-yellow-400">LocalStorage Active</div>
           </div>
         </div>
       </div>
