@@ -226,23 +226,27 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
         </div>
 
-        {/* Dynamic Net Balance Rule */}
+        {/* Dynamic Net Balance Rule: Minus -> Merah (#dc2626) & Rp 0, Positif Value -> Hijau (#16a34a) */}
         <div
+          style={{
+            backgroundColor: netBalance < 0 ? "#dc2626" : netBalance > 0 ? "#16a34a" : undefined,
+            color: netBalance !== 0 ? "#ffffff" : undefined,
+          }}
           className={`insight-card p-3 border-l-5 flex flex-col justify-between min-h-[100px] transition-all duration-200 ${
             netBalance < 0
-              ? "bg-red-600 border-l-red-900 text-white"
+              ? "border-l-red-950 text-white shadow-[4px_4px_0_#000]"
               : netBalance > 0
-              ? "bg-green-600 border-l-green-900 text-white"
+              ? "border-l-green-950 text-white shadow-[4px_4px_0_#000]"
               : "bg-white dark:bg-slate-800 border-l-[var(--google-blue)] text-slate-900 dark:text-white"
           }`}
         >
-          <div className={`text-[9px] font-black uppercase tracking-wider ${netBalance !== 0 ? "text-slate-100" : "text-slate-500"}`}>
+          <div className={`text-[9px] font-black uppercase tracking-wider ${netBalance !== 0 ? "text-white/90" : "text-slate-500"}`}>
             NET BALANCE (ARUS BERSIH)
           </div>
-          <div className="text-lg font-black font-mono my-1">
-            {netBalance < 0 ? formatIDR(0) : formatIDR(netBalance)}
+          <div className="text-lg font-black font-mono my-1 text-white">
+            {netBalance < 0 ? "Rp 0" : formatIDR(netBalance)}
           </div>
-          <div className={`text-[9px] font-bold ${netBalance !== 0 ? "text-slate-100" : "text-slate-500"}`}>
+          <div className={`text-[9px] font-bold ${netBalance !== 0 ? "text-white/90" : "text-slate-500"}`}>
             {netBalance < 0
               ? `Defisit (${formatIDR(netBalance)}) -> Set Rp 0`
               : netBalance > 0
