@@ -1,0 +1,114 @@
+/* =============================================================
+   PROSPERA — SAISOKU Neobrutalist Design System (globals.css)
+   ============================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --insight-bg:     #f1f5f9;
+  --insight-grid:   #cbd5e1;
+  --insight-card:   #ffffff;
+  --insight-panel:  #ffffff;
+  --insight-text:   #0f172a;
+  --insight-muted:  #475569;
+  --insight-border: #0f172a;
+  --insight-shadow: #0f172a;
+  --google-blue:    #4285F4;
+  --google-red:     #EA4335;
+  --google-yellow:  #FBBC05;
+  --google-green:   #34A853;
+}
+
+html.dark {
+  --insight-bg:     #0f172a;
+  --insight-grid:   #1e293b;
+  --insight-card:   #1e293b;
+  --insight-panel:  #0f172a;
+  --insight-text:   #f8fafc;
+  --insight-muted:  #cbd5e1;
+  --insight-border: #94a3b8;
+  --insight-shadow: #000000;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: 'Geist Mono', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--insight-text);
+  background:
+    linear-gradient(var(--insight-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--insight-grid) 1px, transparent 1px),
+    var(--insight-bg);
+  background-size: 24px 24px, 24px 24px, auto;
+  min-height: 100vh;
+}
+
+/* Google 4-color top bar */
+.google-top-bar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000; height: 4px;
+  background: linear-gradient(90deg, #4285F4 0% 25%, #EA4335 25% 50%, #FBBC05 50% 75%, #34A853 75% 100%);
+}
+
+/* Neobrutalist Cards & Panels */
+.insight-card {
+  background: var(--insight-card);
+  border: 3px solid var(--insight-border);
+  box-shadow: 5px 5px 0 var(--insight-shadow);
+  border-radius: 0;
+  transition: box-shadow 160ms ease, transform 160ms ease;
+}
+.insight-card:hover {
+  box-shadow: 7px 7px 0 var(--insight-shadow);
+}
+
+.insight-button {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 10px 18px;
+  font-family: 'Geist Mono', monospace; font-size: 13px; font-weight: 700;
+  color: var(--insight-text); background: var(--insight-panel);
+  border: 3px solid var(--insight-border);
+  box-shadow: 4px 4px 0 var(--insight-shadow);
+  border-radius: 0; cursor: pointer;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+  letter-spacing: 0.02em; text-transform: uppercase;
+}
+.insight-button:hover { transform: translateY(-2px); box-shadow: 4px 6px 0 var(--insight-shadow); }
+.insight-button:active { transform: translateY(1px); box-shadow: 2px 2px 0 var(--insight-shadow); }
+
+.insight-button--primary { background: var(--google-blue); color: #fff; border-color: #0f172a; box-shadow: 4px 4px 0 #0f172a; }
+.insight-button--danger  { background: var(--google-red);  color: #fff; border-color: #0f172a; box-shadow: 4px 4px 0 #0f172a; }
+.insight-button--success { background: var(--google-green); color: #fff; border-color: #0f172a; box-shadow: 4px 4px 0 #0f172a; }
+
+.insight-badge {
+  display: inline-flex; align-items: center; padding: 2px 8px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.05em;
+  text-transform: uppercase; font-family: 'Geist Mono', monospace;
+  border: 2px solid var(--insight-border); background: var(--insight-card);
+  color: var(--insight-text); box-shadow: 2px 2px 0 var(--insight-shadow);
+}
+.insight-badge--blue   { background: var(--google-blue);   color: #fff;    border-color: #0f172a; box-shadow: 2px 2px 0 #0f172a; }
+.insight-badge--red    { background: var(--google-red);    color: #fff;    border-color: #0f172a; box-shadow: 2px 2px 0 #0f172a; }
+.insight-badge--yellow { background: var(--google-yellow); color: #0f172a; border-color: #0f172a; box-shadow: 2px 2px 0 #0f172a; }
+.insight-badge--green  { background: var(--google-green);  color: #fff;    border-color: #0f172a; box-shadow: 2px 2px 0 #0f172a; }
+
+.insight-input {
+  background: var(--insight-card);
+  border: 3px solid var(--insight-border);
+  color: var(--insight-text);
+  padding: 8px 12px;
+  font-family: 'Geist Mono', monospace;
+  font-size: 13px;
+  outline: none;
+  box-shadow: 3px 3px 0 var(--insight-shadow);
+  border-radius: 0;
+}
+.insight-input:focus {
+  border-color: var(--google-blue);
+  box-shadow: 4px 4px 0 var(--google-blue);
+}
