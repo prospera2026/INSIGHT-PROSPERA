@@ -201,27 +201,27 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       {/* METADATA 1: STAT CARDS (COMPACT & PROPORTIONAL) */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
         {/* Total Debit / Pengeluaran */}
-        <div className="insight-card p-2.5 border-l-4 border-l-[var(--google-red)] flex flex-col justify-between min-h-[82px]">
-          <div className="text-[8.5px] font-black text-slate-500 uppercase tracking-wider">
+        <div className="insight-card p-2.5 border-l-4 border-l-[var(--google-red)] flex flex-col justify-between min-h-[82px] bg-white dark:bg-slate-800">
+          <div className="text-[8.5px] font-black text-slate-800 dark:text-slate-300 uppercase tracking-wider">
             TOTAL DEBIT (PENGELUARAN)
           </div>
-          <div className="text-base font-black text-red-600 my-0.5 font-mono">
+          <div className="text-base font-black text-red-600 dark:text-red-400 my-0.5 font-mono">
             {formatIDR(totalDebit)}
           </div>
-          <div className="text-[8px] font-bold text-red-600 flex items-center gap-1">
+          <div className="text-[8.5px] font-extrabold text-red-700 dark:text-red-400 flex items-center gap-1">
             <span>●</span> {filteredTransactions.filter((t) => t.debit > 0).length} Transaksi Keluar
           </div>
         </div>
 
         {/* Total Credit / Pemasukan */}
-        <div className="insight-card p-2.5 border-l-4 border-l-[var(--google-green)] flex flex-col justify-between min-h-[82px]">
-          <div className="text-[8.5px] font-black text-slate-500 uppercase tracking-wider">
+        <div className="insight-card p-2.5 border-l-4 border-l-[var(--google-green)] flex flex-col justify-between min-h-[82px] bg-white dark:bg-slate-800">
+          <div className="text-[8.5px] font-black text-slate-800 dark:text-slate-300 uppercase tracking-wider">
             TOTAL KREDIT (PEMASUKAN)
           </div>
-          <div className="text-base font-black text-green-600 my-0.5 font-mono">
+          <div className="text-base font-black text-green-700 dark:text-green-400 my-0.5 font-mono">
             {formatIDR(totalCredit)}
           </div>
-          <div className="text-[8px] font-bold text-green-600 flex items-center gap-1">
+          <div className="text-[8.5px] font-extrabold text-green-700 dark:text-green-400 flex items-center gap-1">
             <span>●</span> {filteredTransactions.filter((t) => t.credit > 0).length} Transaksi Masuk
           </div>
         </div>
@@ -240,13 +240,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               : "bg-white dark:bg-slate-800 border-l-[var(--google-blue)] text-slate-900 dark:text-white"
           }`}
         >
-          <div className={`text-[8.5px] font-black uppercase tracking-wider ${netBalance !== 0 ? "text-white/90" : "text-slate-500"}`}>
+          <div className={`text-[8.5px] font-black uppercase tracking-wider ${netBalance !== 0 ? "text-white" : "text-slate-800 dark:text-slate-300"}`}>
             NET BALANCE (ARUS BERSIH)
           </div>
           <div className="text-base font-black font-mono my-0.5 text-white">
             {netBalance < 0 ? "Rp 0" : formatIDR(netBalance)}
           </div>
-          <div className={`text-[8px] font-bold truncate ${netBalance !== 0 ? "text-white/90" : "text-slate-500"}`}>
+          <div className={`text-[8.5px] font-extrabold truncate ${netBalance !== 0 ? "text-white" : "text-slate-800 dark:text-slate-300"}`}>
             {netBalance < 0
               ? `Defisit (${formatIDR(netBalance)}) -> Set Rp 0`
               : netBalance > 0
@@ -259,19 +259,19 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       {/* METADATA 2 & METADATA 3 BALANCED GRID (EQUAL HEIGHT 300px) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* METADATA 2: REKAP BULANAN JAN - DES */}
-        <div className="insight-card p-3 flex flex-col justify-between min-h-[300px]">
+        <div className="insight-card p-3 flex flex-col justify-between min-h-[300px] bg-white dark:bg-slate-800">
           <div>
             <div className="flex items-center justify-between mb-2 pb-1.5 border-b-2 border-black dark:border-slate-700">
-              <h3 className="text-xs font-black uppercase tracking-wide">📅 METADATA 2: REKAP BULANAN JAN-DES</h3>
+              <h3 className="text-xs font-black uppercase tracking-wide text-slate-900 dark:text-white">📅 METADATA 2: REKAP BULANAN JAN-DES</h3>
               <span className="insight-badge badge-blue text-[8px] py-0.5 px-1.5">12 BULAN</span>
             </div>
             <div className="overflow-y-auto max-h-56 pr-1">
-              <table className="w-full text-[10px]">
+              <table className="w-full text-[10.5px]">
                 <thead>
-                  <tr className="border-b border-black text-slate-600 dark:text-slate-300 font-sans">
+                  <tr className="border-b-2 border-black text-slate-900 dark:text-slate-200 font-sans font-black">
                     <th className="py-1 px-1.5 text-left">Bulan</th>
-                    <th className="py-1 px-1.5 text-right text-red-600 font-extrabold">Debit</th>
-                    <th className="py-1 px-1.5 text-right text-green-600 font-extrabold">Credit</th>
+                    <th className="py-1 px-1.5 text-right text-red-600 dark:text-red-400 font-black">Debit</th>
+                    <th className="py-1 px-1.5 text-right text-green-700 dark:text-green-400 font-black">Credit</th>
                   </tr>
                 </thead>
                 <tbody className="font-mono">
@@ -283,20 +283,20 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                     return (
                       <tr
                         key={mName}
-                        className={`border-b border-slate-200 dark:border-slate-800 ${
-                          isHighlighted ? "bg-blue-100 dark:bg-slate-700 font-black border-l-4 border-l-[var(--google-blue)]" : ""
+                        className={`border-b border-slate-200 dark:border-slate-700 ${
+                          isHighlighted ? "bg-blue-100 dark:bg-slate-700 font-black border-l-4 border-l-[var(--google-blue)] text-slate-900 dark:text-white" : "text-slate-800 dark:text-slate-200"
                         }`}
                       >
-                        <td className="py-1 px-1.5 font-bold font-sans flex items-center gap-1">
+                        <td className="py-1 px-1.5 font-bold font-sans flex items-center gap-1 text-slate-900 dark:text-white">
                           {mName}
                           {isHighlighted && (
                             <span className="insight-badge badge-blue text-[7px] py-0 px-1">AKTIF</span>
                           )}
                         </td>
-                        <td className="py-1 px-1.5 text-right font-bold text-red-600">
+                        <td className="py-1 px-1.5 text-right font-black text-red-600 dark:text-red-400">
                           {d > 0 ? formatIDR(d) : "-"}
                         </td>
-                        <td className="py-1 px-1.5 text-right font-bold text-green-600">
+                        <td className="py-1 px-1.5 text-right font-black text-green-700 dark:text-green-400">
                           {c > 0 ? formatIDR(c) : "-"}
                         </td>
                       </tr>
@@ -309,16 +309,16 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
 
         {/* METADATA 3: TOP 5 NILAI TRANSAKSI */}
-        <div className="insight-card p-3 flex flex-col justify-between min-h-[300px]">
+        <div className="insight-card p-3 flex flex-col justify-between min-h-[300px] bg-white dark:bg-slate-800">
           <div>
             <div className="flex items-center justify-between mb-2 pb-1.5 border-b-2 border-black dark:border-slate-700">
-              <h3 className="text-xs font-black uppercase tracking-wide">🏆 METADATA 3: TOP 5 NILAI TRANSAKSI</h3>
+              <h3 className="text-xs font-black uppercase tracking-wide text-slate-900 dark:text-white">🏆 METADATA 3: TOP 5 NILAI TRANSAKSI</h3>
               <span className="insight-badge badge-green text-[8px] py-0.5 px-1.5">TOP 5 NOMINAL</span>
             </div>
             <div className="overflow-y-auto max-h-56 pr-1">
-              <table className="w-full text-[10px]">
+              <table className="w-full text-[10.5px]">
                 <thead>
-                  <tr className="border-b border-black text-slate-600 dark:text-slate-300 font-sans">
+                  <tr className="border-b-2 border-black text-slate-900 dark:text-slate-200 font-sans font-black">
                     <th className="py-1 px-1.5 text-left w-8">No</th>
                     <th className="py-1 px-1.5 text-left">Deskripsi</th>
                     <th className="py-1 px-1.5 text-right">Nominal</th>
@@ -327,7 +327,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 <tbody className="font-mono">
                   {top5Transactions.length === 0 ? (
                     <tr>
-                      <td colSpan={3} className="text-center py-8 text-slate-500 font-bold font-sans">
+                      <td colSpan={3} className="text-center py-8 text-slate-800 dark:text-slate-300 font-bold font-sans">
                         Tidak ada transaksi pada periode filter ini.
                       </td>
                     </tr>
@@ -336,17 +336,17 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                       const val = Math.max(t.debit, t.credit);
                       const isDebit = t.debit > t.credit;
                       return (
-                        <tr key={t.id || idx} className="border-b border-slate-200 dark:border-slate-800">
-                          <td className="py-1.5 px-1.5 font-black">#{idx + 1}</td>
+                        <tr key={t.id || idx} className="border-b border-slate-200 dark:border-slate-700">
+                          <td className="py-1.5 px-1.5 font-black text-slate-900 dark:text-white">#{idx + 1}</td>
                           <td className="py-1.5 px-1.5 font-sans">
-                            <div className="font-bold truncate max-w-[160px]">{t.description}</div>
-                            <div className="text-[8px] text-slate-500 font-mono">
+                            <div className="font-bold text-slate-900 dark:text-white truncate max-w-[160px]">{t.description}</div>
+                            <div className="text-[8.5px] text-slate-700 dark:text-slate-300 font-mono font-semibold">
                               {t.journalNo} | {t.postDate}
                             </div>
                           </td>
                           <td
                             className={`py-1.5 px-1.5 text-right font-black ${
-                              isDebit ? "text-red-600" : "text-green-600"
+                              isDebit ? "text-red-600 dark:text-red-400" : "text-green-700 dark:text-green-400"
                             }`}
                           >
                             {formatIDR(val)}
