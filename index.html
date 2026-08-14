@@ -46,8 +46,8 @@
     background: linear-gradient(90deg, #4285F4 0% 25%, #EA4335 25% 50%, #FBBC05 50% 75%, #34A853 75% 100%);
   }
 
-  /* AUTH STAGE MOBILE OPTIMIZED */
-  .auth-stage { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 16px; pt: 24px; }
+  /* AUTH STAGE */
+  .auth-stage { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 16px; }
   .login-shell {
     width: 100%; max-width: 840px; border: 3px solid #000; background: #fff;
     box-shadow: 6px 6px 0 #000; display: grid; grid-template-columns: 1fr; overflow: hidden;
@@ -56,48 +56,69 @@
   
   .panel-showcase {
     background: linear-gradient(135deg, #3b2fe0, #2f6bff, #17c3d9);
-    padding: 24px; color: #fff; display: flex; flex-direction: column; justify-content: space-between; relative; overflow: hidden;
+    padding: 24px; color: #fff; display: flex; flex-direction: column; justify-content: space-between;
   }
   .panel-form { padding: 24px; background: var(--panel-white); }
-  @media(min-width: 768px) { .panel-showcase { padding: 36px; } .panel-form { padding: 36px; } }
 
-  /* APP LAYOUT FLEXIBLE FOR MOBILE */
+  /* INSIGHT SALES DESIGNED APP STAGE */
   .app-stage { display: none; min-height: 100vh; flex-direction: column; }
-  @media(min-width: 768px) { .app-stage { flex-direction: row; } }
 
-  /* SIDEBAR EXACT MATCH ORIGINAL REACT COMPONENT */
-  .sidebar {
-    width: 100%; background: var(--panel-white); border-bottom: 4px solid var(--border);
-    padding: 14px; display: flex; flex-direction: column; justify-content: space-between;
+  /* HEADER BAR EXACT MATCH INSIGHT SALES */
+  .insight-header {
+    position: sticky; top: 0; z-index: 900; height: 60px;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    border-bottom: 3px solid var(--border); background: var(--panel-white);
+    padding: 0 16px;
   }
-  @media(min-width: 768px) {
-    .sidebar { width: 230px; border-right: 4px solid var(--border); border-bottom: none; min-height: 100vh; padding: 14px; }
+
+  /* MOBILE DRAWER SIDEBAR BACKDROP */
+  .sidebar-backdrop {
+    display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6);
+    z-index: 1000; backdrop-filter: blur(2px);
+  }
+
+  /* INSIGHT SALES SIDEBAR DRAWER */
+  .sidebar-drawer {
+    position: fixed; top: 0; bottom: 0; left: 0; width: 280px; z-index: 1001;
+    background: var(--panel-white); border-right: 3.5px solid var(--border);
+    transform: translateX(-100%); transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex; flex-direction: column; justify-content: space-between; padding: 16px;
+    box-shadow: 6px 0 0 rgba(0,0,0,0.1);
+  }
+  .sidebar-drawer.open { transform: translateX(0); }
+
+  @media(min-width: 1024px) {
+    .app-stage { flex-direction: row; }
+    .sidebar-backdrop { display: none !important; }
+    .sidebar-drawer {
+      position: static; transform: none; width: 240px; min-height: 100vh;
+      border-right: 3.5px solid var(--border); box-shadow: none;
+    }
   }
 
   .main-content { flex: 1; padding: 16px; overflow-y: auto; }
-  @media(min-width: 768px) { .main-content { padding: 28px; max-height: 100vh; } }
+  @media(min-width: 768px) { .main-content { padding: 24px; max-height: 100vh; } }
 
-  /* NEOBRUTALIST COMPONENTS EXACT ORIGINAL STYLE */
+  /* INSIGHT SALES NEOBRUTALIST BUTTONS */
+  .insight-button {
+    display: flex; align-items: center; gap: 10px; width: 100%;
+    padding: 9px 12px; font-family: inherit; font-size: 11.5px; font-weight: 900;
+    color: var(--ink-900); background: var(--panel-white); border: 2.5px solid var(--border);
+    box-shadow: 2.5px 2.5px 0 var(--insight-shadow); cursor: pointer; text-transform: uppercase;
+    transition: all 0.15s ease;
+  }
+  .insight-button:hover { transform: translateY(-1px); background: #f1f5f9; }
+  .insight-button--primary {
+    background: var(--brand-blue) !important; color: #fff !important;
+    border-color: #000 !important; box-shadow: 3px 3px 0 #000 !important;
+  }
+  .insight-button--danger {
+    background: #fee2e2; color: #dc2626; border-color: #ef4444; box-shadow: 2px 2px 0 #ef4444;
+  }
+
   .insight-card {
     background: var(--panel-white); border: 3px solid var(--border);
     box-shadow: 4px 4px 0 var(--insight-shadow); padding: 16px; margin-bottom: 16px;
-  }
-  .insight-button {
-    display: flex; align-items: center; gap: 8px; width: 100%;
-    padding: 8px 12px; font-family: inherit; font-size: 11px; font-weight: 900;
-    color: var(--ink-900); background: var(--panel-white); border: 2px solid var(--border);
-    box-shadow: 2px 2px 0 var(--insight-shadow); cursor: pointer; text-transform: uppercase;
-    transition: all 0.15s ease;
-  }
-  .insight-button:hover { background: #f1f5f9; }
-  .insight-button--primary {
-    background: var(--brand-blue) !important; color: #fff !important;
-    border-color: #0f172a !important; box-shadow: 3px 3px 0 #0f172a !important;
-    transform: translateY(-2px);
-  }
-  .insight-button--danger {
-    background: #fee2e2; color: #dc2626; border-color: #ef4444;
-    font-weight: 900; box-shadow: 2px 2px 0 #ef4444;
   }
 
   .insight-input {
@@ -113,7 +134,6 @@
   .badge-blue { background: var(--brand-blue); color: #fff; }
   .badge-green { background: var(--brand-green); color: #fff; }
 
-  /* RESPONSIVE TABLE WRAPPER */
   .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
   table { width: 100%; border-collapse: collapse; text-align: left; min-width: 600px; }
   th, td { padding: 8px 10px; border-bottom: 2px solid var(--border); font-size: 11px; }
@@ -136,7 +156,7 @@
           <span style="font-weight:800;font-size:18px;">INSIGHT PROSPERA</span>
         </div>
         <p style="font-size:9px;background:rgba(0,0,0,0.3);padding:2px 6px;display:inline-block;color:#fde047;font-weight:800;margin-bottom:8px;">SAISOKU FINANCIAL HUB</p>
-        <h2 style="font-size:15px;font-weight:800;margin-bottom:6px;">Dashboard Keuangan & Strict CSV Parser</h2>
+        <h2 style="font-size:15px;font-weight:800;margin-bottom:6px;">Dashboard Keuangan & Mobile Insight Sales UI</h2>
         <p style="font-size:10.5px;opacity:0.9;">Pantau mutasi perbankan, debit/kredit, dan rekapitulasi data dari HP Anda.</p>
       </div>
       <div style="font-size:9px;font-weight:700;border-top:1px solid rgba(255,255,255,0.2);padding-top:10px;margin-top:14px;">© 2026 SAISOKU.ID</div>
@@ -178,38 +198,56 @@
   </div>
 </div>
 
-<!-- 2. MAIN APP STAGE -->
+<!-- 2. MAIN APP STAGE (INSIGHT SALES DESIGN MATCH) -->
 <div id="appStage" class="app-stage">
-  <!-- SIDEBAR (RESTORED TO ORIGINAL COMPONENT DESIGN) -->
-  <aside class="sidebar">
+  <!-- MOBILE DRAWER BACKDROP -->
+  <div id="sidebarBackdrop" class="sidebar-backdrop" onclick="closeSidebarDrawer()"></div>
+
+  <!-- INSIGHT SALES HEADER BAR -->
+  <header class="insight-header" style="width:100%;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <!-- HAMBURGER MENU BUTTON FOR MOBILE -->
+      <button onclick="openSidebarDrawer()" class="insight-button" style="width:36px;height:36px;padding:0;justify-content:center;">
+        <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+
+      <!-- BRAND LOGO INSIGHT SALES STYLE -->
+      <div style="display:flex;align-items:center;gap:6px;">
+        <div style="width:26px;height:26px;background:var(--brand-blue);border:2px solid #000;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;box-shadow:1.5px 1.5px 0 #000;">P</div>
+        <span style="font-weight:900;font-size:15px;letter-spacing:0.5px;">INSIGHT PROSPERA</span>
+      </div>
+    </div>
+
+    <!-- ONLINE BADGE -->
+    <div style="display:flex;align-items:center;gap:6px;">
+      <span class="insight-badge badge-green" style="font-size:9px;padding:3px 8px;">● ONLINE</span>
+    </div>
+  </header>
+
+  <!-- SIDEBAR DRAWER (INSIGHT SALES COMPATIBLE) -->
+  <aside id="sidebarDrawer" class="sidebar-drawer">
     <div>
       <!-- Brand Header -->
-      <div style="margin-bottom:20px;padding-bottom:12px;border-bottom:3px solid var(--border);">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px;">
-          <div style="width:28px;height:28px;background:var(--brand-blue);border:2px solid #000;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;box-shadow:1.5px 1.5px 0 #000;">
-            P
-          </div>
-          <span style="font-weight:900;font-size:18px;letter-spacing:1px;">
-            PROSPERA
-          </span>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding-bottom:12px;border-bottom:3px solid var(--border);">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="width:28px;height:28px;background:var(--brand-blue);border:2px solid #000;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;box-shadow:1.5px 1.5px 0 #000;">P</div>
+          <span style="font-weight:900;font-size:18px;letter-spacing:1px;">PROSPERA</span>
         </div>
-        <p style="font-size:9px;font-weight:800;letter-spacing:1px;color:var(--brand-blue);text-transform:uppercase;">
-          SAISOKU Financial Hub v1.0
-        </p>
+        <button onclick="closeSidebarDrawer()" style="background:none;border:none;font-weight:900;font-size:18px;cursor:pointer;">✕</button>
       </div>
 
-      <!-- Navigation Menu (EXACT ORIGINAL SIDEBAR BUTTONS) -->
+      <!-- Navigation Menu -->
       <nav style="display:flex;flex-direction:column;gap:8px;">
         <button onclick="switchAppTab('dashboard')" id="navDashboard" class="insight-button insight-button--primary">
-          <svg class="w-4 h-4" style="width:14px;height:14px;" fill="none;stroke:currentColor" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <svg style="width:14px;height:14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
           <span>Dashboard Utama</span>
         </button>
         <button onclick="switchAppTab('transactions')" id="navTransactions" class="insight-button">
-          <svg class="w-4 h-4" style="width:14px;height:14px;" fill="none;stroke:currentColor" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <svg style="width:14px;height:14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
           <span>UPLOAD TRANSC</span>
         </button>
         <button onclick="switchAppTab('categories')" id="navCategories" class="insight-button">
-          <svg class="w-4 h-4" style="width:14px;height:14px;" fill="none;stroke:currentColor" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+          <svg style="width:14px;height:14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
           <span>Kategori Transaksi</span>
         </button>
       </nav>
@@ -224,7 +262,7 @@
           <span>STATUS DATA</span>
         </div>
         <p style="font-size:9.5px;color:#64748b;margin-top:4px;font-weight:700;">
-          Local Parsed CSV / Demo State
+          Supabase Cloud / Local Cache
         </p>
       </div>
 
@@ -233,12 +271,8 @@
         <div style="display:flex;align-items:center;gap:6px;">
           <span style="color:var(--brand-blue);font-weight:900;">🛡️</span>
           <div>
-            <div id="sidebarUserTitle" style="font-size:11px;font-weight:900;text-transform:uppercase;">
-              Member Key Access
-            </div>
-            <div id="sidebarUserRole" style="font-size:9px;color:#64748b;font-weight:800;text-transform:uppercase;">
-              Role: user
-            </div>
+            <div id="sidebarUserTitle" style="font-size:11px;font-weight:900;text-transform:uppercase;">Member Key Access</div>
+            <div id="sidebarUserRole" style="font-size:9px;color:#64748b;font-weight:800;text-transform:uppercase;">Role: user</div>
           </div>
         </div>
         <button onclick="handleLogout()" class="insight-button insight-button--danger" style="justify-content:center;padding:6px;font-size:10px;">
@@ -255,7 +289,7 @@
       <div class="insight-card" style="background:#0f172a;color:#fff;padding:12px;">
         <div style="font-size:8.5px;background:var(--brand-blue);display:inline-block;padding:2px 5px;font-weight:800;margin-bottom:3px;">RINGKASAN EKSEKUTIF</div>
         <h1 style="font-size:14px;font-weight:900;">DASHBOARD UTAMA ARUS KAS</h1>
-        <p style="font-size:9.5px;color:#94a3b8;">Pemantauan saldo real-time SAISOKU.ID di Smartphone & Desktop.</p>
+        <p style="font-size:9.5px;color:#94a3b8;">Pemantauan saldo real-time SAISOKU.ID di Mobile & Desktop.</p>
       </div>
 
       <!-- STAT CARDS -->
@@ -340,7 +374,7 @@
   </main>
 </div>
 
-<!-- DETAIL POPUP MODAL MOBILE COMPACT -->
+<!-- DETAIL POPUP MODAL -->
 <div id="detailModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9999;align-items:center;justify-content:center;padding:12px;">
   <div class="insight-card" style="max-width:420px;width:100%;background:#fff;border:3px solid #000;box-shadow:6px 6px 0 #000;padding:0;">
     <div style="background:#0f172a;color:#fff;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;">
@@ -364,6 +398,16 @@
   let transactions = [];
   let categories = ["Biaya Bank / BIFAST", "Purchase Order (PO)", "PaDi UMKM / Inbound", "Simpanan / Tabungan", "Titip Bayar", "Inventaris / Belanja Laptop", "Lain-lain / Operational"];
   let chartInstance = null;
+
+  function openSidebarDrawer() {
+    document.getElementById('sidebarDrawer').classList.add('open');
+    document.getElementById('sidebarBackdrop').style.display = 'block';
+  }
+
+  function closeSidebarDrawer() {
+    document.getElementById('sidebarDrawer').classList.remove('open');
+    document.getElementById('sidebarBackdrop').style.display = 'none';
+  }
 
   function parseCurrency(val) {
     if (!val) return 0;
@@ -476,7 +520,6 @@
     document.getElementById('authStage').style.display = 'flex';
   }
 
-  // Check Persistent Session on Page Reload
   document.addEventListener("DOMContentLoaded", function() {
     const savedRole = localStorage.getItem('prospera_role');
     const savedSession = localStorage.getItem('prospera_session');
@@ -486,6 +529,7 @@
   });
 
   function switchAppTab(tab) {
+    closeSidebarDrawer();
     document.getElementById('viewDashboard').classList.toggle('tab-inactive', tab !== 'dashboard');
     document.getElementById('viewTransactions').classList.toggle('tab-inactive', tab !== 'transactions');
     document.getElementById('viewCategories').classList.toggle('tab-inactive', tab !== 'categories');
@@ -557,11 +601,9 @@
         transactions = validRows;
         localStorage.setItem('PROSPERA_HTML_TX', JSON.stringify(transactions));
 
-        // 🟢 SYNC TO SUPABASE STORAGE BUCKET & DATABASE CLOUD
         const supabaseUrl = "https://bxzagqaxmcahrcorvxco.supabase.co";
         const anonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ4emFncWF4bWNhaHJjb3J2eGNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2NzE1MjcsImV4cCI6MjEwMjI0NzUyN30.k6xVxclf1NypkY_5rb2nvL5md5Etp85uGpJpGvwCgBw";
 
-        // Upload file CSV ke Supabase Storage Bucket
         const fileName = `transactions_${Date.now()}_${file.name.replace(/\s+/g, "_")}`;
         fetch(`${supabaseUrl}/storage/v1/object/csv-files/${fileName}`, {
           method: 'POST',
@@ -575,27 +617,6 @@
         }).then(r => r.json()).then(res => {
           console.log("Uploaded to Supabase Storage:", res);
         }).catch(err => console.warn("Supabase Storage upload warning:", err));
-
-        // Optional Batch insert ke Tabel Supabase Database
-        const rowsToInsert = validRows.map(t => ({
-          post_date: t.postDate,
-          journal_no: t.journalNo,
-          description: t.description,
-          debit: t.debit,
-          credit: t.credit,
-          category: t.category
-        }));
-
-        fetch(`${supabaseUrl}/rest/v1/transactions`, {
-          method: 'POST',
-          headers: {
-            'apikey': anonKey,
-            'Authorization': 'Bearer ' + anonKey,
-            'Content-Type': 'application/json',
-            'Prefer': 'return=minimal'
-          },
-          body: JSON.stringify(rowsToInsert)
-        }).then(r => console.log("Database Supabase Synced")).catch(err => console.warn("Database Sync warning:", err));
 
         alert(`Berhasil memvalidasi ${transactions.length} baris! File ter-upload ke Supabase Storage & tersimpan di LocalStorage.`);
         renderDashboard(); renderTxTable();
