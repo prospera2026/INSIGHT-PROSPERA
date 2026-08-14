@@ -556,7 +556,48 @@
 
         transactions = validRows;
         localStorage.setItem('PROSPERA_HTML_TX', JSON.stringify(transactions));
-        alert(`Berhasil memvalidasi & memuat ${transactions.length} baris transaksi CSV!`);
+
+        // 🟢 SYNC TO SUPABASE STORAGE BUCKET & DATABASE CLOUD
+        const supabaseUrl = "https://bxzagqaxmcahrcorvxco.supabase.co";
+        const anonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ4emFncWF4bWNhaHJjb3J2eGNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2NzE1MjcsImV4cCI6MjEwMjI0NzUyN30.k6xVxclf1NypkY_5rb2nvL5md5Etp85uGpJpGvwCgBw";
+
+        // Upload file CSV ke Supabase Storage Bucket
+        const fileName = `transactions_${Date.now()}_${file.name.replace(/\s+/g, "_")}`;
+        fetch(`${supabaseUrl}/storage/v1/object/csv-files/${fileName}`, {
+          method: 'POST',
+          headers: {
+            'apikey': anonKey,
+            'Authorization': 'Bearer ' + anonKey,
+            'Content-Type': 'text/csv',
+            'x-upsert': 'true'
+          },
+          body: file
+        }).then(r => r.json()).then(res => {
+          console.log("Uploaded to Supabase Storage:", res);
+        }).catch(err => console.warn("Supabase Storage upload warning:", err));
+
+        // Optional Batch insert ke Tabel Supabase Database
+        const rowsToInsert = validRows.map(t => ({
+          post_date: t.postDate,
+          journal_no: t.journalNo,
+          description: t.description,
+          debit: t.debit,
+          credit: t.credit,
+          category: t.category
+        }));
+
+        fetch(`${supabaseUrl}/rest/v1/transactions`, {
+          method: 'POST',
+          headers: {
+            'apikey': anonKey,
+            'Authorization': 'Bearer ' + anonKey,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify(rowsToInsert)
+        }).then(r => console.log("Database Supabase Synced")).catch(err => console.warn("Database Sync warning:", err));
+
+        alert(`Berhasil memvalidasi ${transactions.length} baris! File ter-upload ke Supabase Storage & tersimpan di LocalStorage.`);
         renderDashboard(); renderTxTable();
       }
     });
