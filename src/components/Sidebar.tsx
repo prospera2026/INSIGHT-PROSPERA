@@ -118,16 +118,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </span>
         </button>
 
-        {/* Database Status */}
-        <div className="p-2 bg-slate-100 dark:bg-slate-800 border-2 border-[var(--insight-border)] shadow-[2px_2px_0_var(--insight-shadow)]">
-          <div className="flex items-center gap-1.5 text-[10px] font-bold">
-            <Database className="w-3 h-3 text-[var(--google-green)]" />
-            <span>STATUS DATA</span>
-          </div>
-          <p className="text-[9px] text-slate-500 mt-0.5 font-semibold">
-            Supabase Cloud & Cache
-          </p>
-        </div>
 
         {/* User Info & Logout */}
         <div className="p-2 border-2 border-[var(--insight-border)] bg-[var(--insight-card)] space-y-1.5">
