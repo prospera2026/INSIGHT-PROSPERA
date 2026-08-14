@@ -68,22 +68,22 @@ body {
 }
 
 .insight-button {
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  padding: 10px 18px;
-  font-family: 'Geist Mono', monospace; font-size: 13px; font-weight: 700;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 6px 12px;
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; font-weight: 800;
   color: var(--insight-text); background: var(--insight-panel);
-  border: 3px solid var(--insight-border);
-  box-shadow: 4px 4px 0 var(--insight-shadow);
+  border: 2px solid var(--insight-border);
+  box-shadow: 2px 2px 0 var(--insight-shadow);
   border-radius: 0; cursor: pointer;
-  transition: transform 160ms ease, box-shadow 160ms ease;
+  transition: transform 140ms ease, box-shadow 140ms ease;
   letter-spacing: 0.02em; text-transform: uppercase;
 }
-.insight-button:hover { transform: translateY(-2px); box-shadow: 4px 6px 0 var(--insight-shadow); }
-.insight-button:active { transform: translateY(1px); box-shadow: 2px 2px 0 var(--insight-shadow); }
+.insight-button:hover { transform: translateY(-1px); box-shadow: 2.5px 3.5px 0 var(--insight-shadow); }
+.insight-button:active { transform: translateY(1px); box-shadow: 1px 1px 0 var(--insight-shadow); }
 
-.insight-button--primary { background: var(--google-blue); color: #fff; border-color: #0f172a; box-shadow: 4px 4px 0 #0f172a; }
-.insight-button--danger  { background: var(--google-red);  color: #fff; border-color: #0f172a; box-shadow: 4px 4px 0 #0f172a; }
-.insight-button--success { background: var(--google-green); color: #fff; border-color: #0f172a; box-shadow: 4px 4px 0 #0f172a; }
+.insight-button--primary { background: var(--google-blue); color: #fff; border-color: #0f172a; box-shadow: 2px 2px 0 #0f172a; }
+.insight-button--danger  { background: var(--google-red);  color: #fff; border-color: #0f172a; box-shadow: 2px 2px 0 #0f172a; }
+.insight-button--success { background: var(--google-green); color: #fff; border-color: #0f172a; box-shadow: 2px 2px 0 #0f172a; }
 
 .insight-badge {
   display: inline-flex; align-items: center; padding: 2px 8px;
